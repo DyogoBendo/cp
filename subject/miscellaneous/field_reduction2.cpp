@@ -47,7 +47,7 @@ Analysis analyze(std::vector<int> indicesToSkip) {
 
     if (skip) continue;
 
-    if (x[i] == minX) left.push_back(i);
+    if (x[i] == minX) left.push_back(i);  
     if (x[i] == maxX) right.push_back(i);
     if (y[i] == minY) up.push_back(i);
     if (y[i] == maxY) down.push_back(i);
