@@ -33,7 +33,6 @@ int main(){
     {
         int v = end[i];
 
-
         long long qtd = lower_bound(start.begin(), start.end(), v) - start.begin() - i;
         
         ans = max(ans, qtd);
