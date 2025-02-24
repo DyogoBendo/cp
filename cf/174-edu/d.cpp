@@ -3,31 +3,59 @@
 using namespace std;
 
 int check(string &s){
-    vector<int> cnt_l(26, 0);
-    vector<int> cnt_r(26, 0);
     int n = s.size();
+    vector<vector<int>> cnt_l(n + 1, vector<int>(26, 0));
+    vector<vector<int>> cnt_r(n + 1, vector<int>(26, 0));    
 
     for (int i = 0; i < n; i++)
     {
-        cnt_r[s[i] - 'a']++;
+        for (int j = 0; j < 26; j++)
+        {
+            int x = s[i] - 'a';
+            cnt_l[i + 1][j] = cnt_l[i][j] + (x == j);
+        }
+                
     }
 
-    cout << "s: " << s << endl;
+    for (int i = n - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < 26; j++)
+        {
+            int x = s[i] - 'a';
+            cnt_r[i][j] = cnt_r[i + 1][j] + (x == j);
+        }                
+    }
+    
+    bool found = false;
+    for (int i = n/2 - 1; i >= 0; i--)
+    {
 
+        if(s[i] != s[n - i - 1]){
+
+            bool possible = true;            
+
+            for (int j = 0; j < 26; j++)
+            {
+                if(cnt_l[i + 1][j] < cnt_r[n - i][j]) possible = false;                
+            }
+            
+            if(possible) return i + 1;
+            else break;
+        } 
+    }
+    
+    
     for (int i = 0; i < n; i++)
     {
-        char c = s[i];
-
-        cnt_l[c - 'a'] ++; 
-        cnt_r[c - 'a'] --;
-
+        char c = s[i];        
+        
         bool possible = true;
         for (int j = 0; j < 26; j++)
         {
-            if(cnt_l[j] < cnt_r[j]) possible = false;
-        }
+            if(cnt_l[i][j] < cnt_r[i][j]) possible = false;                        
+        }        
         
-        if(possible) return i + 1;
+        if(possible) return i;
     }
     
     return n;
@@ -55,10 +83,8 @@ void solve(){
     
     int ans = check(s1);
     reverse(s1.begin(), s1.end());
-
-    cout << "ans1: " << ans << endl;
-    ans = min(ans, check(s1));
-    cout << "ans2: " << ans << endl;
+    
+    ans = min(ans, check(s1));    
 
 
     cout << ans << endl;
