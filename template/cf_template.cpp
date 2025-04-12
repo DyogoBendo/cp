@@ -9,6 +9,7 @@ void solve(){
 
 }
 
+
 signed main(){
     darvem;
     int t = 1;
