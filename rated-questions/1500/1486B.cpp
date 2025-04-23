@@ -24,34 +24,10 @@ void solve(){
     sort(xs.begin(), xs.end());
     sort(ys.begin(), ys.end());
 
-    vector<int> xsum(n+1, 0);
-    vector<int> ysum(n+1, 0);
-
-    for (int i = 0; i < n; i++)
-    {
-        xsum[i+1] = xsum[i] + xs[i];
-        ysum[i+1] = ysum[i] + ys[i];
-    }
+    int xposs = n % 2 ? 1 : xs[n/2] - xs[n/2-1] + 1;
+    int yposs = n % 2 ? 1 : ys[n/2] - ys[n/2-1] + 1;
     
-    int dst_min = 1e15, ans = 0;
-    set<pair<int, int>> pset;
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            if(pset.count({xs[i], ys[j]})) continue;
-            pset.insert({xs[i], ys[j]});
-            int dst = xs[i] * (2*i - n) + xsum[n] - 2*xsum[i];
-            dst += ys[j] * (2*j - n) + ysum[n] - 2*ysum[j];
-
-            if(dst < dst_min){
-                dst_min = dst;
-                ans = 1;
-            } else if(dst == dst_min) ans ++;
-        }
-    }
-    
-    cout << ans << endl;
+    cout << xposs * yposs << endl;
 }
 
 
