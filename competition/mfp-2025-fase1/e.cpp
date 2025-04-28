@@ -19,51 +19,20 @@ void solve(){
         }        
     }
     
-    vector<vector<int>> visited(n, vector<int>(m, 0));
-    function<void(int, int)> dfs = [&](int i, int j){
-        if(visited[i][j]) return;
- 
-        visited[i][j] = 1;
-        bool change = false;                       
-        if(i > 0 && g[i-1][j] == g[i][j]){            
-            change = true;            
-        }        
-        if(i < n -1  && g[i+1][j] == g[i][j]){            
-            change = true;                        
-        }        
-        if(j > 0 && g[i][j-1] == g[i][j]){            
-            change = true;                                    
-        }        
-        if(j < m-1 && g[i][j+1] == g[i][j]){            
-            change = true;                                                
-        }
-        
-        g[i][j] += change;        
- 
-        if(i > 0 && g[i-1][j] == g[i][j]){            
-            dfs(i-1, j);
-        }        
-        if(i < n -1  && g[i+1][j] == g[i][j]){            
-            dfs(i+1, j);
-        }        
-        if(j > 0 && g[i][j-1] == g[i][j]){            
-            dfs(i, j-1);
-        }        
-        if(j < m-1 && g[i][j+1] == g[i][j]){            
-            dfs(i, j+1);            
-        }
-    };
-     
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < m; j++)
-        {
-            if(!visited[i][j]){
-                dfs(i, j);
-            }
-        }        
+        {            
+            int p1 = g[i][j] % 2;
+            int p2 = (i & 1) ^ (j & 1);
+            
+            g[i][j] += p1== p2;
+        }
+        
     }
-
+    
+    
+    
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < m; j++)
