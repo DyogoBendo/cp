@@ -4,7 +4,8 @@
     "iostream": "cpp",
     "vector": "cpp",
     "bitset": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "numeric": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
