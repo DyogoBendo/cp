@@ -7,7 +7,7 @@ signed main(){
     int n, m;
     cin >> n >> m;
 
-    vector<vector<int>> g(n);
+    vector<vector<int>> g(n), gi(n);    
 
     for (int i = 0; i < m; i++)
     {
@@ -16,59 +16,64 @@ signed main(){
 
         a--; b--;
 
-        g[a].push_back(b);
+        g[b].push_back(a);
+        gi[a].push_back(b);
     }
-    
-    int c = 0;
 
-    vector<int> visited(n);
-    vector<int> group(n);
-    vector<int> sz(n);
+    vector<int> v1(n), v2(n);
+    vector<int> ord;
 
-    for (int i = 0; i < n; i++)
-    {
-        group[i] = i;
-        sz[i] = 1;
-    }
-    
-    function<int(int)> find = [&](int x){
-        if(group[x] == x) return x;
-        return group[x]= find(group[x]);
-    };
-
-    function<void(int, int)> unite = [&](int x, int y){
-        if(find(x) == find(y)) return;
-        if(sz[find(x)] < sz[find(y)]) swap(x, y);
-
-        sz[find(x)] += sz[find(y)];
-        sz[find(y)] = 0;
-
-        group[find(y)] = find(x);
-    };
-
-    function<void(int)> dfs = [&](int curr){
-        cout << "curr: " << curr << endl;
-        if(visited[curr]) return;
-        visited[curr] = 1;
+    function<void(int)> dfs1 = [&](int curr){
+        if(v1[curr]) return;
+        v1[curr] = 1;
 
         for (auto e : g[curr])
         {
-            cout << "e: " << e << endl;
-            if(g[e].size()) unite(curr, e);
-            dfs(e);
-        }        
+            dfs1(e);
+        }
+        ord.push_back(curr);
     };
-    
     for (int i = 0; i < n; i++)
     {
-        dfs(i);
+        dfs1(i);
+    }
+    reverse(ord.begin(), ord.end());
+
+
+    int total = 0;
+    vector<int> comp(n);
+    function<void(int)> dfs2 = [&](int curr){
+        if(v2[curr]) return;
+        v2[curr] = 1;
+
+        for (auto e : gi[curr])
+        {
+            dfs2(e);
+        }
+        comp[curr] = total;
+    };
+
+    for (auto x : ord)
+    {
+        if(!v2[x]) total++;
+        dfs2(x);
+    }
+
+    int ans = 0;
+    vector<int> cnt(total);
+    for (int i = 0; i < n; i++)
+    {        
+        for (auto e : g[i])
+        {
+            if(comp[e] != comp[i]){
+                cnt[comp[i]-1] ++;
+            }
+        }        
     }
     
-    int ans=  0;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < total; i++)
     {
-        cout << "sz: " << sz[i] << endl;
-        if(sz[i] && g[i].size()) ans ++;
+        ans += cnt[i] == 0;
     }
     
     cout << ans << endl;
