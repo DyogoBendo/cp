@@ -11,32 +11,25 @@ const ll MOD = 1e9+7;
 
 
 ll dp[MAX][MAX]; // dp[n][k]
+int n;
 
-void init(){    
-
-    ll psum[MAX][MAX];
-    for (int i = 1; i < MAX; i++)
-    {        
-        for (int j = 1; j < MAX; j++)
-        {
-            dp[i][j] = (1 + psum[i-1][j-1]) % MOD;                        
-            psum[i][j] = psum[i-1][j] + dp[i][j];
-            psum[i][j] %= MOD;
-        }                
-    }        
-    
+int go(int x, int k){    
+    if(k <= 0) return 0;
+    if(x <= 0) return 1;
+ 
+    if(dp[x][k] != -1) return dp[x][k];
+    return dp[x][k] = (go(x-1, k) + go(n-x, k-1)) % MOD;
 }
 
 void solve(){
-
-    int n, k;
+    memset(dp, -1, sizeof(dp));
+    int k;
     cin >> n >> k;    
 
-    cout << dp[n][k] << endl;
+    cout << go(n, k) << endl;
 }
 
 signed main(){
-    init();
     darvem;
     int t = 1;
     cin >> t;
