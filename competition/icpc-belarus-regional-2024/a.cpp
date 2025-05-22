@@ -18,78 +18,52 @@ signed main(){
         cin >> v[i];
     }
 
-    vector<int> dst;
-
-    map<int, int> m, ml;    
-
-    for (int i = 0; i < n-1; i++)
+    vector<int> ans;
+    bool found = false;
+    for (int i = 0; i <= k; i++)
     {
-        int x = v[i+1]-v[i];
-        if(!ml[x]){
-            ml[x] = i;
+        int curr = n/(k+1) * i;
+
+        int ap = v[curr+1] - v[curr];
+
+        int lft = v[curr];
+        int l = curr - 1;
+        int remove = 0;
+        vector<int> tmp;
+        while(l >= 0){
+            if(v[l] + ap != lft){
+                tmp.push_back(l);
+                remove++;
+            } else{
+                lft = v[l];
+            }
+            l--;
+            if(remove > k) break;
+        }
+        int right = v[curr+1];
+        int r = curr+2;
+        while(r < n){
+            if(right + ap != v[r]){
+                remove++;
+                tmp.push_back(r);
+            } else{
+                right = v[r];
+            }
+            r++;
+            if(remove > k) break;
         }        
-        dst.push_back(x);
-    }        
-
-    vector<int> ans, curr;    
-    auto solve = [&](int x, int l){   
-        vector<int> dst_tmp = dst;           
-        int changes= 0;
-        for (int i = l-1; i >= 0; i--)
-        {        
-            if(changes > k) return n;            
-            if(dst_tmp[i] != x){            
-                ans.push_back(i);
-                if(i == 0){
-                    changes++;
-                } else{
-                    changes++;
-                    dst_tmp[i-1] += dst_tmp[i];
-                }
-            }
-        }
-        for (int i = l+1; i < n-1; i++)
-        {        
-            if(changes > k) return n;            
-            if(dst_tmp[i] != x){
-                ans.push_back(i);
-                if(i == n-2){
-                    changes++;
-                } else{
-                    changes++;
-                    dst_tmp[i+1] += dst_tmp[i];
-                }
-            }
-        }
-        
-        return changes;
-    };
-
-    int bst = n;    
-
-    for (auto [x, l] : ml)
-    {
-        int s = solve(x, l);        
-        if(s < bst){
-            bst = s;                  
-            curr = ans;            
-            
-        }
-        ans.clear();
+        if(!found || tmp.size() < ans.size()) ans = tmp, found = true;
     }
 
-        
-    if(bst > k){
-        cout << -1 << endl;
-    } else{
-        sort(curr.begin(), curr.end());
-        cout << curr.size() << endl;
-        for (auto a : curr)
+    if(ans.size() <= k){
+        cout << ans.size() << endl;
+        for (auto a : ans)
         {
             cout << a+1 << " ";
         }
-        cout << endl;
-        
+        cout << endl;        
+    } else{
+        cout << -1 << endl;
     }
-    
+
 }
