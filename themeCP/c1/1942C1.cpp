@@ -16,7 +16,15 @@ void solve(){
         cin >> v[i];
     }
 
+    int ans = 0;
+    sort(v.begin(), v.end());
+    for (int i = 0; i < x - 1; i++)
+    {
+        if(v[i] + 2 == v[i+1]) ans++;
+    }    
+    if((v[x-1] == n-1 && v[0] == 1) or (v[x-1] ==n &&v[0] == 2)) ans++;
     
+    cout << ans + x -2 << endl;
     
 }
 
