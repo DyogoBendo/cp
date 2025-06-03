@@ -34,25 +34,22 @@ signed main(){
         sort(tree[i].begin(), tree[i].end());
     }
 
-
-    function<vector<pair<char, int>>(int)> dfs2 = [&](int curr){
-        vector<pair<char, int>> v;         
-        for (auto [c, e] : tree[curr])
-        {
-            dfs2(e);
-        }
-        
-    };
-
-
     int ans = 0;
     vector<int> p;
+    vector<vector<int>> aut;
     string s;
     function<void(int, int, int)> dfs = [&](int curr, int j, int i){                
-        vector<int> st(26), mp(26);                
         for (auto [c, e] : tree[curr])
         {                        
+            
             s.push_back(c);
+            vector<int> st(26);                
+            for (int c = 0; c < 26; c++)
+            {
+                if(i > 0 && 'a' + c != s[i]) st[c] = aut[p[i-1]][c];
+                else st[c] = i + ('a' + c == s[i]);
+            }
+            aut.push_back(st);
             int idx = c - 'a';
             int n = i + 1;                   
             if(i != 0 && !st[idx]){                
@@ -72,6 +69,7 @@ signed main(){
             s.pop_back();
             p.pop_back();
         }            
+        aut.pop_back();
     };
 
     dfs(0, 0, 0);
