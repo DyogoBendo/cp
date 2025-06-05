@@ -6,7 +6,7 @@ using namespace std;
 #define ll long long
 
 signed main(){
-    darvem;
+    // darvem;
 
     int n;
     cin >> n;
@@ -36,43 +36,44 @@ signed main(){
 
     int ans = 0;
     vector<int> p;
-    vector<vector<int>> aut;
+    vector<vector<int>> aut(n, vector<int>(26));
     string s;
-    function<void(int, int, int)> dfs = [&](int curr, int j, int i){                
-        for (auto [c, e] : tree[curr])
-        {                        
-            
-            s.push_back(c);
-            vector<int> st(26);                
-            for (int c = 0; c < 26; c++)
-            {
-                if(i > 0 && 'a' + c != s[i]) st[c] = aut[p[i-1]][c];
-                else st[c] = i + ('a' + c == s[i]);
-            }
-            aut.push_back(st);
-            int idx = c - 'a';
-            int n = i + 1;                   
-            if(i != 0 && !st[idx]){                
-                while (j and s[j] != s[i]) j = p[j-1];        
-                if(s[j] == s[i]) j++;  
-                
-                int k = n - j;                                            
-                if(k and j and (n % k == 0)){                                
 
-                    ans= max(ans, k);            
-                } 
-                mp[idx] = j;
-                st[idx] = 1;
-            }                                    
-            p.push_back(mp[idx]);            
-            dfs(e, mp[idx], n);
+    function<void(char)> calc_kmp = [&](char ch){
+        s.push_back(ch);
+
+        int i = s.size() - 1;
+
+        for (int c = 0; c < 26; c++){
+            if(i > 0 && 'a' + c != ch) aut[i][c] = aut[p[i-1]][c];
+            else aut[i][c] = i + (s[i] == ('a' + c));
+        }
+
+    };
+
+    function<void(int)> dfs = [&](int curr){      
+        //cout << "curr: " << curr << endl;
+        for (auto [c, e] : tree[curr])
+        {                  
+            calc_kmp(c);
+            int n = s.size();
+            int j = n >=2 ? aut[p[n-2]][c - 'a'] : 0;                   
+            p.push_back(j);            
+            int k = n - j;                                            
+            //cout << "c: " << c << " E: " << e << " s: " << s << " j: " << j << " n: " << n << endl;      
+            if(k and j and (n % k == 0)){                                
+                ans= max(ans, k);            
+            }    
+            dfs(e);
             s.pop_back();
             p.pop_back();
         }            
-        aut.pop_back();
+        if(s.size()){
+            aut.pop_back();
+        }
     };
 
-    dfs(0, 0, 0);
+    dfs(0);
 
     cout << ans << endl;
     
