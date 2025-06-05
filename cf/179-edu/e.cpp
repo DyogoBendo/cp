@@ -10,54 +10,65 @@ void solve(){
     cin >> n >> q;
 
     string s;
-    cin >> s;
-
-    set<int> st[3];
-
-    for (int i = 0; i < n; i++)
-    {
-        st[s[i] - 'a'].insert(i);
-    }
+    cin >> s;    
     
-
-    map<string, int> cnt;
-
-    while(q--){
+    set<int> s1, s2, s3, s4;
+    
+    for (int i = 0; i < q; i++)
+    {
         string x, y;
         cin >> x >> y;
-        cnt[x+y]++;
-    }
+        string curr= x+y;        
 
+        if(curr == "ba") s1.insert(i);
+        if(curr == "bc") s2.insert(i);
+        if(curr == "ca") s3.insert(i);
+        if(curr == "cb") s4.insert(i);
+    }
 
     for (int i = 0; i < n; i++)
     {
         if(s[i] == 'a') continue;
 
         if(s[i] == 'b'){
-            if(cnt["ba"]){
-                cnt["ba"]--;
+            if(s1.size()){                
+                s1.erase(s1.begin());
                 s[i] = 'a';
-            }else if(cnt["bc"] && cnt["ca"]){
-                cnt["bc"]--;
-                cnt["ca"]--;
-                s[i] = 'a';
-            }
-        } else if(s[i] == 'c'){
-            if(cnt["ca"]){
-                cnt["ca"]--;
-                s[i] = 'a';
-            } else if(cnt["cb"]){
-                cnt["cb"]--;
-                if(cnt["ba"]){
-                    cnt["ba"]--;
+            } else if(s2.size() && s3.size()){
+                int idx = *s2.begin();
+                auto pos = s3.lower_bound(idx);
+                if(pos != s3.end()){
                     s[i] = 'a';
-                } else{
+                    s3.erase(pos);
+                    s2.erase(s2.begin());
+                }
+            }
+        } else{
+            if(s3.size()){                
+                s3.erase(s3.begin());
+                s[i] = 'a';
+            } else if(s4.size()){
+                bool found = false;
+                if(s1.size()){
+                    int idx = *s4.begin();
+                    auto pos = s1.lower_bound(idx);
+                    if(pos != s1.end()){
+                        found = true;
+                        s[i] = 'a';
+                        s1.erase(pos);
+                        s4.erase(s4.begin());
+                    }
+                }
+                if(!found){
                     s[i] = 'b';
+                    s4.erase(s4.begin());
                 }
             }
         }
     }
-    cout <<s << endl;
+    
+        
+    cout << s << endl;
     
 }
 
