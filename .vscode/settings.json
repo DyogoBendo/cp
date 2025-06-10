@@ -11,7 +11,9 @@
     "random": "cpp",
     "unordered_map": "cpp",
     "unordered_set": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "chrono": "cpp",
+    "algorithm": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
