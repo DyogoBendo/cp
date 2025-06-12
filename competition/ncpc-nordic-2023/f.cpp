@@ -36,39 +36,47 @@ signed main(){
         if(isprime) primes.push_back(i);        
     }
     
-
-    set<int> used_numbers; 
     vector<int> ans(n, 0);
+    vector<int> parent(n, 0);
 
-    function<ll(int, int, set<int>)> dfs = [&](int curr, int st, set<int> v){
-        if(ans[curr]) return -1LL;        
-
-        ll i = 0, tmp = st, p = 1LL;
-        while(used_numbers.count(st)){
-            if(v.count(primes[i])){
-                i++;
-                continue;
-            } 
-            st = tmp;
-            st *= primes[i];
-            p = primes[i];
-            i++;            
-        }
-        used_numbers.insert(st);
-        ans[curr] = st;
-
+    function<pair<int, int>(int, int, int)> dfs = [&](int curr, int p, int d){   
+        parent[curr] = p;
+        if(ans[curr]) d = 0;
+        int mx_d = d, mx_s = curr;
         for (auto e : tree[curr])
         {
-            int x = dfs(e, st, v);
-            if(x != -1){
-                v.insert(x);
+            if(e == p) continue;
+            auto[df, sf] = dfs(e, curr, d+1);
+
+            if(df > mx_d){
+                mx_d = df;
+                mx_s = sf;
             }
         }
-        return p;
-        
+        return make_pair(mx_d, mx_s);
     };
 
-    dfs(0, 1, set<int>());
+
+    ans[0] = 1;
+    int idx = 0;
+    auto [prof, who] = dfs(0, 0, 0);
+    while(prof > 0){
+        stack<int> st;
+        while(ans[who] == 0){
+            st.push(who);
+            who = parent[who];
+        }
+        int curr = ans[who];
+        while(!st.empty()){
+            who = st.top(); st.pop();
+            curr *= primes[idx];
+            ans[who] = curr;
+        }
+        idx++;
+        auto [prof1, who1] = dfs(0, 0, 0);
+        prof = prof1;
+        who = who1;
+    }
 
     for (auto a : ans)
     {
