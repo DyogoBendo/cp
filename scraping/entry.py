@@ -145,7 +145,9 @@ class Problem:
         elif self.type in [ProblemType.GYM_EXTRA, ProblemType.UPSOLVING, ProblemType.GYM_UPSOLVING]:
             spreadsheet_problem_type = QuestionSpreadsheetProblemType.UPSOLVING
         elif self.type == ProblemType.USACO:
-            spreadsheet_problem_type = QuestionSpreadsheetProblemType.USACO        
+            spreadsheet_problem_type = QuestionSpreadsheetProblemType.USACO    
+        elif self.type == ProblemType.MARATONA:
+            spreadsheet_problem_type = QuestionSpreadsheetProblemType.MARATONA
         return [self.name, self.link, self.date, spreadsheet_problem_type.value, self.origin, self.got_it, self.solve_it, self.time, self.DIFFICULTY_NAME[self.difficulty]]
     
     def to_competition_question_spreadsheet(self):        

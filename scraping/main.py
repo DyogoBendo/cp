@@ -4,7 +4,7 @@ from codeforces import Codeforces
 import spreadsheet
 
 if __name__ == "__main__":    
-    url = sys.argv[1]
+    url = input("Link: ")
     cf = Codeforces(url)
     result = cf.get_data()
     if type(result) == Problem:     
