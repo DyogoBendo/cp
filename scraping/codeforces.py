@@ -46,7 +46,7 @@ class Codeforces:
         points = contest_participation["points"]            
         party = contest_participation["party"]
         members = party["members"]
-        start_time = party["startTimeSeconds"]
+        start_time = party.get("startTimeSeconds", 0)
         participant_type = party["participantType"]
         problem_results = contest_participation["problemResults"]
         members_names = self.extract_members(members)
