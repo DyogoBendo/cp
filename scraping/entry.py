@@ -4,6 +4,7 @@ from utils import get_now
 from enum import Enum
 
 MEMBERS_LIST = ["Dyogo", "Davi", "Mandelli"]
+MAIN_USER = "Dyogo"
 
 def print_members_list():
     print("Members list: ", end="")
@@ -81,11 +82,11 @@ class Problem:
         self.date = date if date is not None else get_now()        
         self.type = type if type is not None else self.get_type()
         self.who_solve = who_solve if who_solve is not None else self.get_who_solve()
-        self.solve_it = True if self.who_solve == "Dyogo" else False
+        self.solve_it = True if self.who_solve == MAIN_USER else False
         
         if self.type in [ProblemType.GYM_LIVE, ProblemType.CONTEST, ProblemType.VIRTUAL_CONTEST]:            
             self.time = time
-            if(self.who_solve == "Dyogo"):
+            if(self.who_solve == MAIN_USER):
                 self.got_it = True
             else:
                 self.got_it = False                
@@ -95,7 +96,7 @@ class Problem:
                     
         self.wa = wa
         self.contest_name = contest_name 
-        self.difficulty = self.get_difficulty() if self.who_solve == "Dyogo" else None
+        self.difficulty = self.get_difficulty() if self.who_solve == MAIN_USER else None
         print()        
     
     def get_type(self):
@@ -222,4 +223,4 @@ class Competition:
     def to_championship_spreadsheet(self):
         if(self.type != CompetitionType.VIRTUAL_CONTEST):
             entry_type = ChampionshipSpreadsheetEntryType.GYM if self.type == CompetitionType.GYM else ChampionshipSpreadsheetEntryType.LIVE_CONTEST
-            return ["Dyogo", entry_type.value, self.date, self.name, self.difficulty, self.time, self.link]
+            return [MAIN_USER, entry_type.value, self.date, self.name, self.difficulty, self.time, self.link]

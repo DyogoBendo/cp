@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from entry import Problem, Competition, EntryType, ProblemType, CompetitionType, print_members_list
+from entry import Problem, Competition, EntryType, ProblemType, CompetitionType, print_members_list, MAIN_USER
 
 class Codeforces:
     url: str
@@ -87,7 +87,7 @@ class Codeforces:
                 if points > 0:                    
                     wa = problem_result["rejectedAttemptCount"]
                     time = int(problem_result["bestSubmissionTimeSeconds"]/60)                
-                    who_solve = None if self.type == EntryType.GYM else "Dyogo"                    
+                    who_solve = None if self.type == EntryType.GYM else MAIN_USER                    
                 problem = Problem(name=name, type=problem_type, date=date, wa=wa, time=time, link=self.url + "/problem/"+index, origin=self.ORIGIN, who_solve=who_solve, contest_name=contest["name"])
                                 
                 all_problems.append(problem)
