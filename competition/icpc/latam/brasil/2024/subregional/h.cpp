@@ -11,50 +11,27 @@ signed main(){
     string m, n;
     cin >> m >> n;
 
-    int x = 0, y = 0;
+    int y = 0;
 
     reverse(m.begin(), m.end());
     reverse(n.begin(), n.end());
 
-    vector<int> v1, v2;
-    for (int i = 0; i < max(m.size(), n.size()); i++)
+    vector<int> v1;
+    for (int i = 0; i < n.size(); i++)
     {
-        int curr = (1 << i);
-        if(i < m.size()){
-            if(m[i] == '1'){
-                x += curr;
-            } else if(m[i] == '*'){
-                v1.push_back(curr);
-            }
+        int curr = (1 << i);        
+        if(n[i] == '1'){
+            y += curr;
+        } else if(n[i] == '*'){
+            v1.push_back(curr);
         }
-        if(i < n.size()){
-            if(n[i] == '1'){
-                y += curr;
-            } else if(n[i] == '*'){
-                v2.push_back(curr);
-            }
-        }
+        
     }
 
     vector<int> all_n, all_m;
-
-    all_m.push_back(x);
-    all_n.push_back(y);
-    for (int v : v1)
-    {
-        vector<int> tmp;
-
-        for (auto k : all_m)
-        {
-            tmp.push_back(k + v);
-        }
-        for (auto k : tmp)
-        {
-            all_m.push_back(k);
-        }
     
-    }
-    for (int v : v2)
+    all_n.push_back(y);    
+    for (int v : v1)
     {
         vector<int> tmp;
 
@@ -68,30 +45,80 @@ signed main(){
         }
     }
 
-    for (auto a : all_m)
-    {
-        for (auto b : all_n)
-        {
-            if(a % b == 0){
-                vector<int> ans;
-                for (int i = 0; i < m.size(); i++)
-                {
-                    if((1 << i) & a) ans.push_back(1);
-                    else ans.push_back(0);
-                }
-
-                reverse(ans.begin(), ans.end());
-
-                for (auto an : ans)
-                {
-                    cout << an;
-                }
-                cout << endl;
     
-                return 0;
-            }
-        }
+    for (auto b : all_n)
+    {
+        if(!b) continue;        
         
+        int curr = 1 % b;
+        int total = 0;
+        vector<pair<int, int>> verify;
+        for (int i = 0; i < m.size(); i++)
+        {                                                
+            if(m[i] == '1') total = (total + curr) % b;
+            else if(m[i] == '*') verify.push_back({curr, i});
+            curr = (2 * curr) % b;
+        }
+
+        vector<pair<int, vector<int>>> ps;
+        ps.push_back({total, vector<int>()});
+                
+        vector<int> ans_idx;
+        bool ans_found = false;        
+        if(total == 0){
+            ans_found = true;            
+        } else{
+            for (auto v : verify)
+            {            
+                vector<pair<int, vector<int>>> tmp;                
+                for (auto p : ps)
+                {
+                    vector<int> t = p.second;
+                    t.push_back(v.second);
+                    int mod = (p.first + v.first) % b;                    
+                    tmp.push_back({mod, t});                
+                }
+    
+                for (auto t : tmp)
+                {                    
+                    ps.push_back(t);
+                    ans_idx = t.second;
+                    if(t.first == 0){
+                        ans_found = true;
+                        break;
+                    } 
+                }             
+                if(ans_found) break;       
+            }
+        }        
+
+        
+        if(ans_found){
+            string ans = m;                    
+    
+            for (int i = 0; i < m.size(); i++)
+            {
+                if(ans[i] == '*'){
+                    bool found = false;
+                    for (auto idx : ans_idx)
+                    {
+                        if(i == idx) found = true;
+                    }
+                    
+                    if(found) ans[i] = '1';
+                    else ans[i] = '0';
+                }
+            }    
+            
+            reverse(ans.begin(), ans.end());
+    
+            cout << ans << endl;
+    
+            return 0;        
+        }
+                
     }
+        
+    
     
 }
