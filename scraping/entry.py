@@ -26,6 +26,7 @@ class ProblemType(Enum):
     USACO = 5
     MARATONA = 6
     VIRTUAL_CONTEST = 7
+    TOP15 = 8
 
 class QuestionSpreadsheetProblemType(Enum):
     USACO = "USACO"
@@ -44,6 +45,8 @@ class ChampionshipSpreadsheetEntryType(Enum):
     TOPIC_QUESTION = "Questão Tópico"
     QUESTION = "Questão"
     CONTEST_QUESTION = "Questão Contest"
+    MARATONA_QUESTION = "Questão Maratona"
+    TOP15_QUESTION = "Questão Top 15"
 
 class EntryType(Enum):
     GYM = "gym"
@@ -146,7 +149,7 @@ class Problem:
             spreadsheet_problem_type = QuestionSpreadsheetProblemType.UPSOLVING
         elif self.type == ProblemType.USACO:
             spreadsheet_problem_type = QuestionSpreadsheetProblemType.USACO    
-        elif self.type == ProblemType.MARATONA:
+        elif self.type == ProblemType.MARATONA or self.type == ProblemType.TOP15:
             spreadsheet_problem_type = QuestionSpreadsheetProblemType.MARATONA
         return [self.name, self.link, self.date, spreadsheet_problem_type.value, self.origin, self.got_it, self.solve_it, self.time, self.DIFFICULTY_NAME[self.difficulty]]
     
@@ -171,6 +174,10 @@ class Problem:
             
         elif self.type == ProblemType.UPSOLVING:
             entry_type = ChampionshipSpreadsheetEntryType.UPSOLVING
+        elif self.type == ProblemType.MARATONA:
+            entry_type = ChampionshipSpreadsheetEntryType.MARATONA_QUESTION
+        elif self.type == ProblemType.TOP15:
+            entry_type = ChampionshipSpreadsheetEntryType.TOP15_QUESTION
             
         return [self.who_solve, entry_type.value, self.date, self.name, self.difficulty, self.time, self.link]
 
