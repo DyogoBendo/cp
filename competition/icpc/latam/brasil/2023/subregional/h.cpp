@@ -12,15 +12,13 @@
         int n, s;
         cin >> n >> s;        
 
-        vector<tuple<int, int, int>> v;  
-        vector<tuple<int, int, int>> original;
+        vector<tuple<int, int, int>> v;          
         for (int i=1; i<=n; i++){
             int a, b, c;
             cin >> a >> b >> c;
             
             v.push_back({a, -i, c});
-            v.push_back({b, i, c});
-            original.push_back({a, b, c});
+            v.push_back({b, i, c});            
         }    
 
         sort(v.begin(), v.end());
