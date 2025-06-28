@@ -26,8 +26,8 @@ void solve(){
             ans[i] = ans[i+1] + 1;
             bst[curr] = ans[i + 1];
         } else{
-            ans[i] = bst[curr] + 1;
             bst[curr] = min(bst[curr], ans[i+1]);
+            ans[i] = bst[curr] + 1;
         }
     }
 
