@@ -29,6 +29,14 @@ lld area(pair<lld, lld> p1, pair<lld, lld> p2 ){
     return ((dy) * (dx)) / 2;
 }
 
+lld cross(pair<lld, lld> p1, pair<lld, lld> p2){
+    return p1.first * p2.second - p1.second*p2.first;
+}
+
+lld area_triangle(pair<lld, lld> p1, pair<lld, lld> p2, pair<lld, lld> p3){
+    return fabs(cross({p2.first - p1.first, p2.second - p1.second}, {p3.first - p1.first, p3.second - p1.second})) / 2;
+}
+
 signed main(){
     darvem;
     cout << fixed << setprecision(18);
@@ -51,32 +59,20 @@ signed main(){
     lld ans = 0;
     for (int st = 0; st < n; st++)
     {
-        vector<vector<lld>> dp1(p+1, vector<lld>(2*n, 0));
-        vector<vector<lld>> dp2(p+1, vector<lld>(2*n, 0));
-                
-        for (int sz = 1; sz <= p; sz++)
+        vector<vector<lld>> dp(p+1, vector<lld>(n, 0));        
+                      
+        for (int sz = 2; sz < p; sz++)
         {            
-            for (int i = 0; i <= n; i++)
+            for (int i = 1; i < n; i++)
             {                                                                                
                 for (int j = 0; j < i; j++)
-                {                                                                   
-                    int pi = i + st;
-                    int pj = j + st;
-                    dp1[sz][pi] = max(dp1[sz - 1][pj] + shoelace(points[pj], points[pi]), dp1[sz][pi]);
-                    dp2[sz][pi] = min(dp2[sz - 1][pj] + shoelace(points[pj], points[pi]), dp2[sz][pi]);
-                
+                {                                                                                       
+                    dp[sz][i] = max(dp[sz - 1][j] + area_triangle(points[0], points[j], points[i]), dp[sz][i]);  
+                    ans = max(ans, dp[sz][i]);
                 }                                      
             }                                    
-        }  
-
-        for (int i = st + (p - 1); i <= n + st; i++)
-        {                            
-            lld curr1 = (dp1[p][i] + shoelace(points[st], points[i]));              
-            lld curr2 = abs((dp2[p][i] + shoelace(points[st], points[i])));    
-            cout << "c1; " << curr1 << " c2: " << curr2 << endl;          
-            ans = max(ans, curr1);
-            ans = max(ans, curr2);
-        }                                
+        }   
+        rotate(points.begin(), points.begin() + 1, points.end());                           
     }
             
     cout << ans<< endl;
