@@ -48,6 +48,7 @@ void solve(){
     } 
     else{            
         double ans = cant / 2.0 - 180;        
+        cout << setprecision(1) << fixed;
         cout << "no " << ans;
     } 
     cout << '\n';
