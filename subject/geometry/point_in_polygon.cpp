@@ -48,9 +48,25 @@ bool is_in_segment(pt p, pt s1, pt s2){
 
     ll segd = dst2(s1, s2);
 
-    ll d1 = dst2(s1, p), d2 = dst2(d2, p);
+    ll d1 = dst2(s1, p), d2 = dst2(s2, p);
 
     return d1 <= segd && d2 <= segd;
+}
+
+ll sarea2(pt p, pt q, pt r) { // 2 * area com sinal
+	return (q-p)^(r-q);
+}
+
+bool ccw(pt p, pt q, pt r) { // se p, q, r sao ccw
+	return sarea2(p, q, r) > 0;
+}
+
+// ray casting
+bool intersects_ray(pt p, pt s1, pt s2){
+    // precisamos verificar se o segmento está na altura do raio, e se ele está à direita
+    if(s1.y <= p.y && p.y < s2.y && ccw(p, s1, s2)) return true;
+    if(s2.y <= p.y && p.y < s1.y && ccw(p, s2, s1)) return true;
+    return false;
 }
 
 signed main(){
@@ -62,34 +78,23 @@ signed main(){
     vector<pt> polygon(n);
     for(auto &p : polygon) cin >> p;
 
-    ll parea = 0;
-
-    for (int i = 1; i <= n; i++)
-    {
-        parea += polygon[i - 1] ^ polygon[i%n];
-    }
-
-    parea = abs(parea);
-
     auto solve = [&](){
         pt p;
-        cin >> p;
-        ll area = 0;
+        cin >> p;        
             
+        int cnt = 0;
         for (int i = 1; i <= n; i++)
         {
             pt prev = polygon[i - 1], curr = polygon[i%n];
             if(is_in_segment(p, prev, curr)){
                 cout << "BOUNDARY" << endl;
                 return;
-            }                        
+            }     
+            cnt += intersects_ray(p, prev, curr);              
         }
         
-                
+        cout << (cnt % 2 ? "INSIDE" : "OUTSIDE") << endl;                
     };
 
-    while(m--){
-        solve();
-    }
-
+    while(m--) solve();
 }
