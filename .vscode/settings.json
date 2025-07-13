@@ -15,7 +15,8 @@
     "chrono": "cpp",
     "algorithm": "cpp",
     "span": "cpp",
-    "numbers": "cpp"
+    "numbers": "cpp",
+    "iosfwd": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
