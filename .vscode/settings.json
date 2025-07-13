@@ -16,7 +16,8 @@
     "algorithm": "cpp",
     "span": "cpp",
     "numbers": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "array": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
