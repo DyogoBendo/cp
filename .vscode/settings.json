@@ -24,7 +24,9 @@
     "utility": "cpp",
     "valarray": "cpp",
     "iomanip": "cpp",
-    "tuple": "cpp"
+    "tuple": "cpp",
+    "forward_list": "cpp",
+    "list": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
