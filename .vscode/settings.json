@@ -27,7 +27,8 @@
     "tuple": "cpp",
     "forward_list": "cpp",
     "list": "cpp",
-    "compare": "cpp"
+    "compare": "cpp",
+    "cmath": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
