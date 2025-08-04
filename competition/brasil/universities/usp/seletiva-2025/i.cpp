@@ -103,7 +103,7 @@ signed main(){
         for(int j = i + 1; j <= n; j++){
             bool intersects_other_segments = false;
             line l1(pts[i], pts[j]);
-            for(int k = 0; k < n; k++){
+            for(int k = 0; k < n && !intersects_other_segments; k++){
                 if(min(k, (k+1)%n) == i && max(k, (k+1)%n) == j) continue;
                 if(k == i or k == j or (k+1)%n == i or (k+1)%n == j) continue;
                 line l2(polygon[k], polygon[(k+1)%n]);
@@ -113,8 +113,9 @@ signed main(){
 
             pt m((pts[i].x + pts[j].x) / 2, (pts[i].y + pts[j].y) / 2) ;
             if(!intersects_other_segments && inpol(polygon, m)){
-                g[i].push_back({j, sqrt(dist2(pts[i], pts[j]))});
-                g[j].push_back({i, sqrt(dist2(pts[i], pts[j]))});
+				ld d = sqrt(dist2(pts[i], pts[j]));
+                g[i].push_back({j, d});
+                g[j].push_back({i, d});
             } 
         }
     }
