@@ -5,7 +5,7 @@ using namespace std;
 #define endl '\n'
 #define ll long long
 
-const int INF = 1e9;
+const int INF = 1e5;
 
 // Dinitz
 //
@@ -83,25 +83,25 @@ vector<pair<int, int>> get_cut(dinitz& g, int s, int t) {
 }
 
 signed main(){
-    freopen("l.in", "r", stdin);
-    freopen("l.out", "w", stdout);
+    //freopen("l.in", "r", stdin);
+    //freopen("l.out", "w", stdout);
     darvem;
 
     int g, l;
     cin >> g >> l;
-    cout << g << " " <<l << endl;
+    //cout << g << " " << l << endl;
 
     vector<int> letter_cnt(26, 0);
     vector<int> exactly_cnt(26, 0);
     vector<int> appeared(26, 0);    
 
     vector<vector<int>> letters_possibilities(l, vector<int>(26)); 
-    vector<int> ans(l, -1);
+    vector<int> ans(l, -1);    
 
     for(int i = 0; i < g-1; i++){
         string s, r;
         cin >> s >> r;
-        cout << s << " " << r << endl;
+        //cout << s << " " << r << endl;
 
         vector<int> curr_cnt(26);
         vector<int> fixed(26);
@@ -110,12 +110,13 @@ signed main(){
             appeared[c] = 1;
             if(r[j] == 'B'){
                 fixed[c] = 1;
+                letters_possibilities[j][c] = 1;
             } else if(r[j] == 'Y'){
                 curr_cnt[c]++;
                 letters_possibilities[j][c] = 1;
             } else{                
                 curr_cnt[c]++;
-                ans[j] = c;                
+                ans[j] = c;                             
             }
         }
         for(int k = 0; k < 26; k++){
@@ -125,61 +126,55 @@ signed main(){
         }
     }
 
-    for(int i = 0; i < l; i++){
-        if(ans[i] != -1) letter_cnt[ans[i]]--;
+    int suml = 0;    
+    vector<int> green(26);
+    for(int i = 0; i < l; i++){        
+        if(ans[i] != -1){
+            green[ans[i]] ++;
+            for(int j = 0; j < 26; j++){
+                if(j != ans[i]) letters_possibilities[i][j] = 1;
+            }
+        } 
+    }
+    for(int i = 0; i < 26; i++){        
+        letter_cnt[i] = max(letter_cnt[i], green[i]);
     }
 
     vector<vector<int>> letter_to_position(26);
-    for(int i = 0; i < l; i++){
-        if(ans[i] != -1) continue;
+    for(int i = 0; i < l; i++){        
         for(int j = 0; j < 26; j++){
             if(letters_possibilities[i][j] == 0) letter_to_position[j].push_back(i);
         }
     }
-
-    dinitz d(28+l);
-    for(int i = 0; i < 26; i++){        
-        //cout << "letter: " << (char)(i + 'a') << " flow max: " << x << endl;
-        d.add(0, i+1, letter_cnt[i]); // fluxo para cada letra é a quantidade de letras de cada um
-    }
+    
+    dinitz d(29+l);
+    for(int i = 0; i < 26; i++){                  
+        d.add(0, i+2, letter_cnt[i]); // fluxo para cada letra é a quantidade de letras de cada um                
+        d.add(1, i+2, exactly_cnt[i] ? 0 : l);        
+        suml += letter_cnt[i];
+    }        
+    d.add(0, 1, l - suml);
     for(int i = 0; i < 26; i++){
         for(int k : letter_to_position[i]){
             //cout << "letter: " << (char)(i + 'a') << " to: " << k << endl;
-            d.add(i+1, 27+k, appeared[i]); // podemos passar apenas uma letra para cada posição
-            
+            d.add(i+2, 28+k, 1); // podemos passar apenas uma letra para cada posição            
         }
         //cout << endl;
     }
     for(int i = 0; i < l; i++){
-        d.add(27+i, 27+l, 1); // para cada posição, teremos uma única letra possível na configuração final
+        d.add(28+i, 28+l, 1); // para cada posição, teremos uma única letra possível na configuração final        
     }
 
-    int tot = d.max_flow(0, 27+l);
+    d.max_flow(0, 28+l);    
         
+    auto ans2 = ans;    
+    auto prev = ans;
     for(int i = 0; i < 26; i++){        
-        for(auto &e : d.g[i+1]){            
-            if(e.flow == 1) ans[e.to - 27] = i;            
+        for(auto &e : d.g[i+2]){            
+            if(e.flow == 1) ans[e.to - 28] = i;            
         }        
     }
-
-    int cnt = 0;
-    for(int i = 0; i < 26; i++) cnt += letter_cnt[i];
-    assert(tot == cnt);
-
-    for(int i = 0; i < l; i++){
-        int x = ans[i];
-        if(x == -1){
-            for(int j = 0; j < 26; j++){
-                
-                if(letters_possibilities[i][j] == 0 and !exactly_cnt[j]){
-                    x = j;
-                    break;
-                }
-            }
-            
-        }        
-
-        cout << (char)('a' + x);
-    }
-    cout << endl;        
+    
+    for(int i = 0; i < l; i++) cout << (char)(ans[i] + 'a');    
+    cout << endl;
 }
