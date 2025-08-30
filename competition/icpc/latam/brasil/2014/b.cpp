@@ -23,15 +23,31 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-void solve(){
-
-}
-
-
 signed main(){
     darvem;
-    int t = 1;
-    cin >> t;
 
-    while(t--) solve();
+    int n;
+    cin >> n;
+
+    vector<int> go(n+1);
+    for(int i = 1; i <= n; i++){
+        if(i <= n/2){
+            go[i] =i*2;
+        } else{            
+            go[i] =  2*i - n - 1;
+        }
+    }
+
+    vector<int> visited(n+1);
+    int ans = 0;
+    function<void(int, int)> dfs = [&](int c, int d){
+        if(visited[c]) return;     
+        visited[c] = 1;
+        ans = max(ans, d);
+        dfs(go[c], d+1);
+    };
+
+    dfs(1, 1);
+
+    cout << ans << endl;
 }
