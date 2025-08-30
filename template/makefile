@@ -1,2 +1,7 @@
 CXX = g++
-CXXFLAGS = -fsanitize=address,undefined -fno-omit-frame-pointer -g -Wall -Wshadow -std=c++17 -Wno-unused-result -Wno-sign-compare -Wno-char-subscripts -DDEBUG #-fuse-ld=gold
+CXXFLAGS = -fsanitize=address,undefined -fno-omit-frame-pointer -g -Wall -Wshadow -std=c++17 -Wno-unused-result -Wno-sign-compare -Wno-char-subscripts -DDEBUG
+TARGET = a.out
+
+%: %.cpp
+	$(CXX) $(CXXFLAGS) $< -o $(TARGET)
+1 
