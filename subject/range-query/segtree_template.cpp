@@ -1,5 +1,6 @@
 template <typename T>
 class SegmentTree {
+public:
     int n;
     vector<T> seg;
 
