@@ -101,26 +101,23 @@ signed main(){
 
     int n, q;
     cin >> n >> q;
-
-    vector<mint> p(q);
-    p[0] = 1;
-    for(int i = 1; i < q; i++) p[i] = p[i-1] * 2;
-    vector<mint> ans(n + 1);
-
+    
     vector<int> queries(q);
-
+	
     for(int i = 0; i < q; i++) cin >> queries[i];
-
+	
     vector<mint> suffix(q + 1);
-    for(int i = q - 1; i>= 0; i--){
-        suffix[i] = suffix[i + 1] / 2 + queries[i];
+    for(int i = q - 1; i>= 0; i--){		
+		suffix[i] = (suffix[i + 1] + queries[i]) / 2;
     }
-
+	
+	vector<mint> ans(n + 1);	
     for(int i = 0; i < q; i++){
         int x = queries[i];
         dbg(x, suffix[i+1]);
         ans[x] += suffix[i + 1];
     }
 
-    for(int i = 0; i < n; i++) cout << ans[i+1] << endl;
+	ans[1] += suffix[0] * 2; 
+    for(int i = 0; i < n; i++) cout << ans[i+1]/2 << endl;
 }
