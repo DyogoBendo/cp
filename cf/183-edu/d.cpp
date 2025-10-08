@@ -33,60 +33,21 @@ template <class T>
 const int MAXN = 30 + 1;
 const int MAXK = MAXN*(MAXN-1)/2;
 
-int dp[MAXN][MAXK][MAXN];
-int ndp[MAXN][MAXK];
+int dp[MAXN][MAXK];
 
-bool check_inversion(int l, int r, vector<int> &v){
-    ord_set<int> os;    
-    for(int i = l; i <= r; i++){
-        if(os.order_of_key(v[i])) return true;        
-        os.insert(v[i]);
-    }    
-    return false;
-}
-
-int calc_inversion_value(vector<int> &v){
-    int ans = 0;
-    for(int i = 0; i < sz(v); i++){
-        for(int j = i + 1; j < sz(v); j++){
-            ans += check_inversion(i, j, v);
-        }
-    }
-    return ans;
+int calc(int x){
+    return (x)*(x-1) / 2;
 }
 
 void init(){
-    for(int i = 1; i<MAXN; i++){
-        dbg(i);
-        vector<int> visited((i + 1)*(i) /2);
-        queue<pair<int, vector<int>>> q;
-        vector<int> v(i);
-        iota(v.begin(), v.end(), 1);
-        q.push({0, v});
-        visited[0] = 1;
-        while(!q.empty()){
-            auto [curr, u] = q.front(); q.pop();                        
-            dbg(i, curr);
-
-            ndp[i][curr] = 1;
-            for(int j = 0; j < i; j++) dp[i][curr][j] = u[j];
-
-            for(int a = 0; a < i; a++){
-                for(int b = a + 1; b < i; b++){
-                    swap(v[a], v[b]);
-                    int x = calc_inversion_value(v);
-
-                    if(!visited[x]){
-                        dbg(a, b, x);
-                        visited[x] = 1;
-                        q.push({x, v});
-                    }
-
-                    swap(v[a], v[b]);
-                }
+    dp[0][0] = 1;    
+    for(int i = 0; i<MAXN; i++){                
+        for(int j = 0; j < MAXK; j++){
+            if(!dp[i][j]) continue;
+            for(int k = 1; k + i < MAXN; k++){
+                dp[i+k][j + calc(k)] = k;
             }
         }
-
     }
 }
 
@@ -94,9 +55,26 @@ void solve(){
     int n, k;
     cin >> n >> k;
 
-    if(!ndp[n][k]) cout << -1 << endl;
+    int tot = calc(n) - k;    
+    dbg(n, k);
+
+    if(!dp[n][tot]) cout << 0 << endl;
     else{
-        for(int i = 0; i < n; i++) cout << dp[n][k][i] << ' ';
+        int st = 1;
+        vector<int> ans(n);
+        int curr = dp[n][tot];
+        int en = n;
+        while(en){
+            dbg(en, curr);
+            for(int i = 0; i < curr; i++){
+                ans[en-curr+i] = st+i;
+            }
+            en -= curr;
+            st += curr;
+            tot -= calc(curr);
+            curr = dp[en][tot];
+        }
+        for(int i = 0; i < n; i++) cout << ans[i] << ' ';
         cout << endl; 
     }
 }
