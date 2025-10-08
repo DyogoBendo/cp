@@ -41,13 +41,11 @@ void solve(){
     int n;
     cin >> n;
 
-    int a, b;
-    a = uniform(1, n-1);        
-    while((b = uniform(1, n)) <= a);
-
-    while(interaction(a, b) == 0){
-        a = uniform(1, n-1);        
-        while((b = uniform(1, n)) <= a);
+    bool found = false;
+    for(int i = 0; !found; i++){
+        for(int j = 1; j <= n and !found; j++){
+            found = interaction(j, (j + i) % n + 1);
+        }    
     }
 
 }
