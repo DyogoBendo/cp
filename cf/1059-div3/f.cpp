@@ -23,8 +23,56 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
+int n, m;
+bool check_0(vector<int> &ans, vector<int> &visited, vector<int> &v_min, vector<int> &v_max){
+    for(int i = 1; i <= n; i++){
+        if(visited[i] == m){            
+            int prev = 1;
+            for(int j = 0; j < n; j++){
+                if(j == i-1) ans[j] = prev = 0;
+                else ans[j] = j + prev;
+            } 
+            return true;
+        }
+    }
+    return false;
+}
+
+bool check_unvisited(vector<int> &ans, vector<int> &visited, vector<int> &v_min, vector<int> &v_max){
+    for(int i = 1; i <= n; i++){
+        if(visited[i] == 0){            
+            int prev = 1;
+            for(int j = 0; j < n; j++){
+                if(j == i-1) ans[j] = prev = 0;
+                else ans[j] = j + prev;
+            } 
+            return true;
+        }
+    }
+    return false;
+}
+
+bool check_side(vector<int> &ans, vector<int> &visited, vector<int> &v_min, vector<int> &v_max){
+    for(int i = 1; i <= n; i++){
+        if(v_min[i] < i or v_max[i] > i){               
+            if(v_min[i] < i) ans[i-2] = 1;
+            else ans[i] = 1;            
+            ans[i-1] = 0;
+
+            int x = 2;            
+            for(int j = 0; j < n; j++){
+                if(j == i-1 or ans[j])continue;
+                ans[j] = x;
+                x++;
+            } 
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void solve(){
-    int n, m;
     cin >> n >> m;
 
     vector<pair<int, int>> intervals(m);
@@ -34,24 +82,27 @@ void solve(){
 
         intervals[i] = {l, r};
     }
-
-    bool no_overlap = false;
-    vector<int> visited(n+1);
+    
+    vector<int> visited(n+1), vmin(n+1, 1), vmax(n+1, n);
     for(int i = 0; i < m; i++){
         auto [l, r] = intervals[i];
-        for(int a= l; a <= r; a++) visited[a]++;
+        for(int a= l; a <= r; a++){
+            visited[a]++;            
+            vmin[a] = max(vmin[a], l);
+            vmax[a] = min(vmax[a], r);
+        } 
     }
 
-    set<int> used;
-    vector<int> ans(n+1);
-    for(int i = 1; i <= n; i++){
-        if(visited[i] == m){
-            used.insert(0);
-            ans[i] = 0;
-            break;
-        }
+    vector<int> ans(n);
+
+    if(!check_0(ans, visited, vmin, vmax) && !check_side(ans, visited, vmin, vmax) && !check_unvisited(ans, visited, vmin, vmax)){
+        ans[0] = 0;
+        ans[n-1] = 1;
+        for(int i = 1; i < n-1; i++) ans[i] = i+1;
     }
 
+    for(auto a : ans) cout << a << ' ';
+    cout << endl;
     
 }
 
