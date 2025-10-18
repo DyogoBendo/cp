@@ -36,8 +36,8 @@ int solve(int look){
     int l = 2, r = n;
     while(l < r){
         int m = (r - l) / 2 + l;        
-
-        int x = query(x);        
+        
+        int x = query(m);                
 
         if((x <= look )){
             l = m+1;

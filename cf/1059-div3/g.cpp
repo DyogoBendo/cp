@@ -24,7 +24,17 @@ void dbg_out(string s, H h, T... t){
 #endif
 
 void solve(){
+    int n;
+    cin >> n;
 
+    if(n == 2) cout << -1 << endl;
+    else if(n==3) cout << "1 3\n2 3\n";
+    else if(n==4) cout << "1 2\n3 1\n4 1" << endl;
+    else{
+        cout << "1 2\n2 3\n3 4\n";
+        for(int i = 5; i < n; i++) cout << "2 " << i << endl;
+        cout << "1 " << n << endl;
+    }
 }
 
 
