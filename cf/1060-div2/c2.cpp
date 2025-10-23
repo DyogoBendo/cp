@@ -51,40 +51,44 @@ void init(){
 void solve(){
     int n;
     cin >> n;
-    vector<int> v(n);
-    vector<int> b(n);
+    vector<pair<int, int>> v(n);    
     
-    for(int i = 0; i < n; i++) cin >> v[i];
-    for(int i = 0; i < n; i++) cin >> b[i];    
+    for(int i = 0; i < n; i++) cin >> v[i].second;
+    for(int i = 0; i < n; i++) cin >> v[i].first;    
 
-    map<int, int> cnt;
-    vector<int> ap;
-            
-    for(auto x : v){
-        for(auto f : factors[x]){            
+    sort(v.begin(), v.end());
+
+    map<int, int> cnt;        
+    vector<int> ap;        
+    for(int i = 0; i < n; i++){
+        for(auto f : factors[v[i].second]){            
             if(cnt[f]){
                 cout << 0 << endl;
                 return;
             }
-            cnt[f]++;
-            ap.push_back(f);
+            cnt[f]++;        
+            if(i > 0) ap.push_back(f);    
         }
     }
-
-    ll ans = 1e18;
-    for(int i = 0; i < n; i++){
-        for(auto p : ap){        
-            int x = v[i];
-            int y = b[i];
-            if(x %p == 0) continue;
-            int k = p - (x%p);   
-                     
-            ans = min(ans, k * y);
-        }
-    }
-    sort(b.begin(), b.end());
-    ans = min(ans, b[0] + b[1]);
     
+    ll ans = v[0].first + v[1].first;
+    for(int i = 0; i < n; i++){
+        int x = v[i].second + 1;
+        for(auto f : factors[x]){            
+            if(cnt[f]){
+                ans = min(ans, v[i].first);
+            }            
+        }
+    }        
+    
+    for(auto p : ap){        
+        int x = v[0].second;
+        int y = v[0].first;        
+        int k = p - (x%p);                   
+        ans = min(ans, k * y);
+    }
+    
+
     cout << ans << endl;
 }
 
