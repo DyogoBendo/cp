@@ -23,30 +23,28 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-ll ha(vector<int> &v){
-    ll MOD = 1e9+7;
-    ll p = 10000019;
-    ll curr = 0;
+int ha(vector<int> &v){
+    int MOD = 1e9+7;
+    int p = 10000019;
+    int curr = 0;
     for(int i = 1; i < sz(v); i++){        
         assert(v[i] < p);
         dbg(i, v[i]);   
-        curr = (curr * p + v[i]) % MOD;        
-    }
-    assert(curr >= 0);
+        curr = ((curr * p) + v[i]);             
+    }    
     dbg(curr);
     return curr;
 }
 
-ll ha2(vector<int> &v){
-    ll MOD = 1e9+9;
-    ll p = 10000079;
-    ll curr = 0;
+int ha2(vector<int> &v){
+    int MOD = 1e9+9;
+    int p = 10000079;
+    int curr = 0;
     for(int i = 1; i < sz(v); i++){        
         assert(v[i] < p);
         dbg(i, v[i]);   
-        curr = (curr * p + v[i]) % MOD;        
+        curr = ((curr * p ) + v[i]);             
     }
-    assert(curr >= 0);
     dbg(curr);
     return curr;
 }
@@ -61,10 +59,10 @@ signed main(){
 
     if(k*k < n){        
         vector<int> curr(k+1);
-        map<pair<ll, ll>, int> ap;
+        map<pair<int, int>, int> ap;
         int cnt0=k;
         int ans = 0;
-        ap[make_pair(ha(curr), ha2(curr))] = 1;
+        ap[{ha(curr), ha2(curr)}] = 1;
         for(int i = 1; i<=n; i++){
             if(!curr[v[i]]) cnt0--;
             curr[v[i]]++;
@@ -75,8 +73,8 @@ signed main(){
                     if(curr[j] == 0) cnt0++;
                 } 
             }           
-            ll h = ha(curr);
-            ll h2 = ha2(curr);
+            int h = ha(curr);
+            int h2 = ha2(curr);
             if(ap[{h, h2}]) ans = max(ans, i - ap[{h, h2}]+1);
             else ap[{h, h2}] = i+1;
         }
