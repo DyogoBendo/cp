@@ -29,8 +29,8 @@ void solve(){
     vector<int> v(n);
 
     for(int i = 0; i < n; i++) cin >> v[i];
-    int mx = 0;
-    int movs = 1;
+    ll mx = 0;
+    ll movs = 1;
     for(int i = 0; i < n; i++){
         if(v[i]){
             mx++;
@@ -39,7 +39,7 @@ void solve(){
         }
     }
 
-    mx -= max((n - movs), 0);
+    mx -= max((n - movs), 0ll);
     cout << mx << endl;
 }
 
