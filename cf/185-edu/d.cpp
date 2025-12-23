@@ -33,7 +33,7 @@ int calc(char c){
 int ans (int tot, int ci, int cv, int cx, int tot_av, int negative_spot, int av_to_change, int one_extra){
     dbg(tot_av, av_to_change, negative_spot, one_extra, tot);
     int cost = tot;
-    dbg(ci, cv, cx);
+    dbg(tot, ci, cv, cx);
     if(ci >= tot_av){
         cost += (tot_av - negative_spot) - negative_spot + av_to_change;
         return cost;
@@ -48,6 +48,7 @@ int ans (int tot, int ci, int cv, int cx, int tot_av, int negative_spot, int av_
     ci -= used_negative_spots;
     tot_av -= used_negative_spots;
     cost -= used_negative_spots;
+    negative_spot -= used_negative_spots;
 
     dbg(used_negative_spots, cost);
 
@@ -147,7 +148,7 @@ void solve(){
             if(s[i+1] == 'V' or s[i+1] == 'X') tot --;
             else if(s[i+1] == 'I') tot++;
             else{
-                fixed[i]=1;
+                fixed[i+1]=1;
                 av_to_change++;
             } 
         }
@@ -165,6 +166,7 @@ void solve(){
     int one_extra = 0;
     int curr_sz = 0;
     for(int i = 0; i < n; i++){
+        dbg(i, fixed[i]);
         if(!fixed[i]) curr_sz++;
         else{
             one_extra += curr_sz / 2;
