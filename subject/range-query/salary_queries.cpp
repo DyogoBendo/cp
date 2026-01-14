@@ -23,84 +23,46 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-using namespace __gnu_pbds;
-template <class T>
-	using ord_set = tree<T, null_type, less<T>, rb_tree_tag,
-	tree_order_statistics_node_update>;
+const int MAXN = 5e5 + 5;
+vector<int> values;
 
-template <typename T>
-class SegmentTree {
-public:
+struct Bit {
     int n;
-    vector<T> seg;
-
-    T neutral(){
-        return 0;
-    }
-
-    T combine(T l, T r){
-        return l + r;
-    }
-
-    T build(const vector<T> &v, int p, int l, int r) {
-        if (l == r) return seg[p] = v[l];
-        
-        int mid = (l + r) / 2;
-        T left = build(v, 2*p, l, mid);
-        T right = build(v, 2*p + 1, mid + 1, r);
-        return seg[p] = combine(left, right);
-    }
-
-    T update(int k, T u, int p, int l, int r) {
-        if (l == r) return seg[p] += u;
-
-        int mid = (l + r) / 2;
-        T left = seg[2*p], right = seg[2*p + 1];
-
-        if (k <= mid)left = update(k, u, 2*p, l, mid);
-        else right = update(k, u, 2*p + 1, mid + 1, r);
-        
-        return seg[p] = combine(left, right);
-    }
-
-    T query(int a, int b, int p, int l, int r) {
-        if (l > b || r < a) return neutral();
-        if (l >= a && r <= b) return seg[p];
-        int mid = (l + r) / 2;
-        T left = query(a, b, 2*p, l, mid);
-        T right = query(a, b, 2*p + 1, mid + 1, r);
-        return combine(left, right);
-    }
-
-    SegmentTree(const vector<T> &v) {
-        n = (int)v.size();
-        seg.assign(4*n, neutral());
-        if (n > 0) build(v, 1, 0, n-1);
-    }
-
-    void update(int idx, T val) {
-        update(idx, val, 1, 0, n-1);
-    }
-
-    T query(int l, int r) {
-        return query(l, r, 1, 0, n-1);
-    }
+	vector<ll> bit;
+	Bit(int _n=0) : n(_n), bit(n + 1) {}
+	Bit(vector<int>& v) : n(v.size()), bit(n + 1) {
+        for (int i = 1; i <= n; i++) {
+            bit[i] += v[i - 1];
+			int j = i + (i & -i);
+			if (j <= n) bit[j] += bit[i];
+		}
+	}
+	void update(int pos, ll x) { // soma x na posicao i
+        int i = upper_bound(values.begin(), values.end(), pos) - values.begin();
+		for (i++; i <= n; i += i & -i) bit[i] += x;
+	}
+	ll pref(int pos) { // soma [0, i]
+        int i = upper_bound(values.begin(), values.end(), pos) - values.begin();        
+		ll ret = 0;
+		for (i++; i; i -= i & -i) ret += bit[i];
+		return ret;
+	}
+	ll query(int l, int r) {  // soma [l, r]
+		return pref(r) - pref(l - 1); 
+	}
 };
 
+Bit bt(MAXN);
 
 signed main(){
     darvem;
-
+    
     int n, q;
     cin >> n >> q;
 
-    ord_set<int> values;
-
     vector<int> salaries(n);
     for(int i = 0; i < n; i++) cin >> salaries[i];
-    for(int i = 0; i < n; i++) values.insert(salaries[i]);
+    for(int i = 0; i < n; i++) values.push_back(salaries[i]);
 
     vector<tuple<char, int, int>> v;
 
@@ -109,36 +71,25 @@ signed main(){
         int a, b;
         cin >> c >> a >> b;
 
-        if(c == '!') values.insert(b);        
+
+        if(c == '!') values.push_back(b);        
 
         v.push_back({c, a, b});
     }
 
-    unordered_map<int, int> mp;
+    sort(values.begin(), values.end());
+    values.erase(unique(values.begin(), values.end()), values.end());        
 
-    int curr = 0;
-    for(auto x : values){
-        mp[x] = curr++;
-    }
-
-    SegmentTree seg(vector<ll>(values.size() + 1));
-
-    for(auto s : salaries){        
-        seg.update(mp[s], 1);
-    } 
+    for(int i = 0; i < n; i++) bt.update(salaries[i], 1);    
 
     for(auto [c, a, b] : v){
-        if(c == '!'){
-            int prev = mp[salaries[a-1]];
-            dbg(prev);
-            seg.update(prev, -1);            
-            seg.update(mp[b], 1);
-            salaries[a-1] = b;
-        } else{
-            int l = values.order_of_key(a);
-            int r = values.order_of_key(b);
-            dbg(l, r);
-            cout << seg.query(l, r) << endl;
+        if(c == '!'){  
+            a--;          
+            bt.update(salaries[a], -1);            
+            bt.update(b, 1);
+            salaries[a] = b;
+        } else{                              
+            cout << bt.query(a,b) << endl;
         }
     }
 }
