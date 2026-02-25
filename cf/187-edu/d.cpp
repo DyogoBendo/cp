@@ -28,8 +28,8 @@ void solve(){
     cin >> n >> m;
 
     vector<int> va(n), vb(m);
-    set<int> s;
-    map<int, int> mp;
+    set<int> s;    
+    vector<int> mp(n + m + 1);
     
     for(int i = 0; i < n; i++) cin >> va[i];
     for(int i = 0; i < m; i++) cin >> vb[i];
@@ -55,12 +55,13 @@ void solve(){
     
     // pra que bob nao possa usar ele, significa que todos os x dividem y
     int a = 0, b = 0, both = 0;
-    for(auto [x, c] : mp){
+    for(int i = 0; i < m; i++){
+        int x = vb[i];
         int cnt2 = cnt[x];
 
-        if(cnt2 == tot) a += c;
-        else if(cnt2 == 0) b += c;
-        else both += c;
+        if(cnt2 == tot) a ++;
+        else if(cnt2 == 0) b ++;
+        else both ++;
     }
 
     int st = both & 1;
