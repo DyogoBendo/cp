@@ -23,38 +23,41 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-bool check(ll s, ll m, ll k){
-    for(ll i = 61; i >= 0; i--){        
-        if((m >> i) & 1LL){
-            ll div = s / (1LL << i);
-            ll can = min(div, k);            
-            s -= (1LL << i) * can;
-        }
-    }
-    return s;
+const int MAX = 1e5;
+int divi[MAX];
+vector<int> primes;
+
+void crivo(int lim) {
+	divi[1] = 1;
+	for (int i = 2; i <= lim; i++) {
+		if (divi[i] == 0) divi[i] = i, primes.push_back(i);
+		for (int j : primes) {
+			if (j > divi[i] or i*j > lim) break;
+			divi[i*j] = j;
+		}
+	}
 }
 
-
 void solve(){
-    ll s, m;
-    cin >> s >> m;
-    ll l = 0, r = 2e18;
+    int n;
+    cin >> n;
 
-    while(l < r){
-        ll mid = (r - l) / 2 + l;
+    int ans = 1;
+    for(auto p : primes){
+        if(n % p == 0){
+            ans *= p;
 
-        if(check(s, m, mid)){
-            l = mid + 1;
-        } else{
-            r = mid;
+            while(n % p == 0) n /= p;
         }
-    }    
+    }
+    ans *= n;
 
-    cout << (!check(s, m, l) ? l : -1) << endl;
+    cout << ans << endl;
 }
 
 
 signed main(){
+    crivo(MAX - 1);
     darvem;
     int t = 1;
     cin >> t;

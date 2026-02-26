@@ -23,34 +23,25 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-bool check(ll s, ll m, ll k){
-    for(ll i = 61; i >= 0; i--){        
-        if((m >> i) & 1LL){
-            ll div = s / (1LL << i);
-            ll can = min(div, k);            
-            s -= (1LL << i) * can;
+void solve(){
+    int n;
+    cin >> n;
+
+    vector<int> v(n+1);
+    for(int i = 1; i <= n; i++) cin >> v[i];
+
+    int pos_max = -1;
+
+    for(int i = 1; i <= n; i++){
+        if(v[i] == n){
+            pos_max = i;
         }
     }
-    return s;
-}
+    swap(v[1], v[pos_max]);
 
 
-void solve(){
-    ll s, m;
-    cin >> s >> m;
-    ll l = 0, r = 2e18;
-
-    while(l < r){
-        ll mid = (r - l) / 2 + l;
-
-        if(check(s, m, mid)){
-            l = mid + 1;
-        } else{
-            r = mid;
-        }
-    }    
-
-    cout << (!check(s, m, l) ? l : -1) << endl;
+    for(int i = 1; i <= n; i++) cout << v[i] << " ";
+    cout << endl;
 }
 
 
