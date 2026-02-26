@@ -23,39 +23,51 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-const int MAXN=  5e5 + 10;
+const int MAXN=  5e5 + 10, MAX2 = 20;
 
-int ap[MAXN], v[MAXN], dp[MAXN];
+int ap[MAXN], v[MAXN], dp[MAXN], n;
 
-int calc(int l, int r, int x){
-    if(dp[x] != -1) return dp[x];
-    if(r < l or !x) return 0;
-    int pos = ap[x];
-    if(pos < l or pos > r) return dp[x] = calc(l, r, x-1);
-
-    if(pos == l) l++;
-    else if(pos == r) r--;
-    else if(v[pos-1] < v[pos] and v[pos+1] < v[pos]){
-        int dl = pos - l;
-        int dr = r - pos;
-        
-        return dp[x]= min(dl + calc(pos+1, r, x-1), dr + calc(l, pos-1, x-1));
-    }
-    return dp[x] = calc(l, r, x-1);
+namespace sparse {
+	int m[MAX2][MAXN], n;
+	void build(int n2, int* v) {
+		n = n2;
+		for (int i = 0; i < n; i++) m[0][i] = v[i];
+		for (int j = 1; (1<<j) <= n; j++) for (int i = 0; i+(1<<j) <= n; i++)
+			m[j][i] = max(m[j-1][i], m[j-1][i+(1<<(j-1))]);
+	}
+	int query(int a, int b) {
+		int j = __builtin_clz(1) - __builtin_clz(b-a+1);
+		return max(m[j][a], m[j][b-(1<<j)+1]);
+	}
 }
 
-void solve(){
-    int n;
+
+int calc(int l, int r){ 
+    if(r <= l) return 0;
+    if(r < 1)  return 0;
+    if(l > n) return 0;
+    int x = sparse::query(l, r);
+    int pos = ap[x];    
+    int dl = pos - l;
+    int dr = r - pos;    
+        
+    return min(dl + calc(pos+1, r), dr + calc(l, pos-1));
+        
+}
+
+void solve(){    
     cin >> n;
 
-    for(int i = 1; i <= n; i++) cin >> v[i];
-    for(int i = 1; i <= n; i++) ap[v[i]] = i;
+    for(int i = 0; i < n; i++) cin >> v[i];
+    for(int i = 0; i < n; i++) ap[v[i]] = i;
+
+    sparse::build(n, v);
 
     for(int i = 0; i<= n; i++) dp[i] = -1;
 
-    int l = 1, r = n;
+    int l = 0, r = n-1;
 
-    cout << calc(l, r, n) << endl;
+    cout << calc(l, r) << endl;
 }   
 
 
