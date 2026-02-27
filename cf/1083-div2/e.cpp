@@ -24,7 +24,7 @@ void dbg_out(string s, H h, T... t){
 #endif
 
 void solve(){
-
+    
 }
 
 
