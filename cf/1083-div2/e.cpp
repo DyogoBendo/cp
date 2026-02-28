@@ -23,9 +23,35 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
+const int MOD = 998244353;
+
 void solve(){
-    
-}
+    int n;
+    cin >> n;
+
+    vector<int> v(n+1);
+
+    for(int i = 1; i <= n; i++) cin >> v[i];
+
+    vector<int> dp(n+1);
+
+    dp[0] = 1;
+    for(int k = 1; k <= n; k++){        
+        vector<int> p(k+1);        
+        p[k] = k;
+        dp[k] = dp[k-1];
+        for (int i = k-1, j = k; i > 0; i--) {            
+            while (j != k and v[j] != v[i]){                
+                j = p[j+1];            
+            }             
+            if (v[j] == v[i]) j--;            
+            p[i] = j;            
+            if(j == k) dp[k] = (dp[k] + dp[i-1]) % MOD;
+        }        
+    }
+
+    cout << dp[n] << endl;
+}   
 
 
 signed main(){
