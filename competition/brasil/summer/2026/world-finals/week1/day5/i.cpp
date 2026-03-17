@@ -32,18 +32,28 @@ signed main(){
     cin >> s;
     int n = sz(s);
 
-    vector<vector<int>> dp(n+1, vector<int>(2));
+    ll sum_odd = 0;
+    ll sum_even = 0;
 
-    dp[0][0] = 1;
-    for(int i = 1; i <= n; i++){
-        int d = s[i-1] - '0';
+    ll dp_odd = 0;
+    ll dp_even = 1;    
+    for(int i = 0; i < n; i++){        
+                
+        if(s[i] != '0'){
+            sum_even = (sum_even + dp_even) % MOD;
+            sum_odd = (sum_odd + dp_odd) % MOD;
+        }
 
-        dp[i][0] = dp[i-1][1];
-        dp[i][1] = dp[i-1][1];
-        if(d) dp[i][1] = (dp[i][1] + dp[i-1][0]) % MOD; 
-
-        dbg(i, dp[i][0], dp[i][1]);
+        ll new_dp_odd = sum_even;
+        ll new_dp_even = sum_odd;
+        
+        if(s[i] == '0'){
+            new_dp_even = (new_dp_even + dp_odd) % MOD;
+            new_dp_odd = (new_dp_odd + dp_even) % MOD;
+        }
+        dp_even = new_dp_even;
+        dp_odd = new_dp_odd;
     }   
 
-    cout << dp[n][0] << endl;
+    cout << dp_even << endl;
 }
