@@ -28,13 +28,11 @@ void solve(){
     cin >> p >> q;
 
     ll tot = p + 2*q;
-
-    dbg(tot);
+    
     for(ll i = 1; i * i < tot; i++){
         ll j = (tot - i) / (2 * i + 1);
 
-        if(2*i*j + i + j == tot){
-            dbg(i, j, 2*i * j + i + j);
+        if(2*i*j + i + j == tot and i*j + min(i, j) >= q){                        
             cout << i << " " << j << endl;
             return;
         }
