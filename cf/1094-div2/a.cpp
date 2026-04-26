@@ -23,29 +23,22 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-#define int ll
-
 void solve(){
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vector<int> A(n);
-    for(int i = 0; i < n; i++) cin >> A[i];
+    int mx = n*100;
 
-    vector<int> B(n/2 + 2);
-    for(int i = 1; i <= n/2; i++) B[i] = (A[i-1] - A[n-i] + m) % m;
+    vector<int> pos(mx + 1);
 
-    vector<int> C(sz(B) - 1);
-    for(int i = 0; i < sz(B)-1; i++) C[i] = (B[i+1] - B[i] + m) % m;
-    
-    sort(C.begin(), C.end());
+    bool can = false;
+    for(int i = 0; i < n; i++){
+        int a;
+        cin >> a;
+        if(a == 100) can = true;
+    }
 
-    int somac = 0;
-    for(int i = 0; i < sz(C); i++ ) somac += C[i];    
-
-    int ans = 0;
-    for(int i = 0; i < sz(C) - somac / m; i++ ) ans += C[i];
-    cout << ans << endl;
+    cout << (can? "Yes" : "No") << endl;
 }
 
 

@@ -23,29 +23,8 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-#define int ll
-
 void solve(){
-    int n, m;
-    cin >> n >> m;
 
-    vector<int> A(n);
-    for(int i = 0; i < n; i++) cin >> A[i];
-
-    vector<int> B(n/2 + 2);
-    for(int i = 1; i <= n/2; i++) B[i] = (A[i-1] - A[n-i] + m) % m;
-
-    vector<int> C(sz(B) - 1);
-    for(int i = 0; i < sz(B)-1; i++) C[i] = (B[i+1] - B[i] + m) % m;
-    
-    sort(C.begin(), C.end());
-
-    int somac = 0;
-    for(int i = 0; i < sz(C); i++ ) somac += C[i];    
-
-    int ans = 0;
-    for(int i = 0; i < sz(C) - somac / m; i++ ) ans += C[i];
-    cout << ans << endl;
 }
 
 

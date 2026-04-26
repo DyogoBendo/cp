@@ -24,7 +24,56 @@ void dbg_out(string s, H h, T... t){
 #endif
 
 void solve(){
+    int n, a, b;
+    cin >> n >> a >> b;
 
+    if(n&1 or ((a+b) & 1) == 0){
+        cout << "No" << endl;
+        return;
+    }
+
+    string ans = "";
+    string base_row = "";
+    for(int i = 0; i < n-1; i++) base_row += "R";
+    base_row += "D";
+    for(int i = 0; i < n-1; i++) base_row += "L";
+    base_row += "D";
+
+    int cnt_rows = 0;
+    while(a > 2){
+        a -= 2;
+        ans += base_row;
+        cnt_rows += 2;
+    }
+
+    string base_column = "DRUR";
+    int cnt_columns = 0;
+    while(b > 2){
+        b -= 2;
+        ans += base_column;
+        cnt_columns += 2;
+    }
+
+    dbg(ans, a, b);
+
+    if(a == 1 and b == 2){
+        ans += "DR";
+    } else{
+        ans += "RD";
+    }
+
+    cnt_rows += 2;
+    cnt_columns += 2;
+
+    reverse(base_column.begin(), base_column.end());
+    for(int i = cnt_columns; i < n; i+= 2){
+        ans += base_column;
+    }
+
+    reverse(base_row.begin(), base_row.end());
+    for(int i = cnt_rows; i < n; i+= 2) ans += base_row;
+
+    cout << "Yes" << endl << ans << endl;
 }
 
 
