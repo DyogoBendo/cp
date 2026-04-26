@@ -23,9 +23,80 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-void solve(){
-
+// insert x into s, return sz(s)
+int insert(ll x){
+    int ans;
+    cout << "I " << x << endl;
+    cin >> ans;
+    return ans;
 }
+
+// query how many are >= y
+int query(ll y){
+    int ans;
+    cout << "Q " << y << endl;
+    cin >> ans;
+    return ans;
+}
+
+void answer(ll k, ll c){
+    cout << "A " << k << " " << c << endl;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+
+    cout << 0 << endl; // init set
+
+    ll k, c;
+
+    const ll INF = (1LL << n);
+
+    int sz1 = insert(0);
+    if(sz1 == 1){ // inserimos 0 de novo, logo era operação and
+        k = 1;
+
+        // vamos colocar o valor de c no set agora
+        insert(INF - 1);
+
+        ll lo = 1, hi = INF;
+
+        while(lo < hi){
+            ll mid = (hi - lo) / 2 + lo;
+
+            // quantos caras são maiores do que o número que pedimos, se for 1 quer dizer que tem alguém maior que é o número que estamos procurando
+            if(query(mid) == 1) lo = mid+1;
+            else hi = mid;
+        }
+        c = hi-1;
+    } else{
+        ll lo = 1, hi = INF;
+        
+        while(lo < hi){
+            ll mid = (hi - lo) / 2 + lo;
+                    
+            // quantos caras são maiores do que o número que pedimos, se for 1 quer dizer que tem alguém maior que é o número que estamos procurando
+            if(query(mid) == 1) lo = mid+1;
+            else hi = mid;
+        }
+        c = hi-1;
+
+        if(c == INF - 1){
+            int sz2 = insert(1);
+            if(sz2 == 2) k = 2;
+            else k = 3;            
+        } else{
+            // inserimos 11111...111 se for or vamos ter ele agora no vetor se for xor não
+            insert(INF - 1);
+
+            if(query((INF - 1))) k = 2;
+            else k = 3;
+        }
+    }
+
+    answer(k, c);
+}   
 
 
 signed main(){
