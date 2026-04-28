@@ -194,6 +194,12 @@ struct cmp_sweepangle {
 	}
 };
 
+pt get_pt(ld tan, pt p){
+	ld y = tan + p.y;
+	dbg(p.x+1, y);
+	return pt(p.x + 1, y);
+}
+
 signed main(){
     darvem;
 
@@ -218,4 +224,59 @@ signed main(){
     }
 
     for(int i = 0; i < n; i++) dbg(i, angles[i]);
+
+	ld ideal_angle = pi/4;
+	ld ninety = pi/2;
+
+	ld ans = 0;
+
+	dbg(tanl(ideal_angle));
+	for(int i = 0; i < n; i++){
+		int prev = (i - 1+ n) % n;
+        int prox = (i + 1) % n;
+		ld ang_prev = pi - angles[prev];
+        ld ang_prox = pi - angles[prox];
+		
+		if(ang_prev <= eps or ang_prox <= eps) continue;
+		
+		dbg(i, ang_prev, ang_prox);
+		if(ang_prev + ang_prox > ninety){
+			if(ang_prev >= ideal_angle and ang_prox >= ideal_angle){
+				ang_prev = ideal_angle;
+				ang_prox = ideal_angle;
+			} else if(ang_prev < ideal_angle){
+				ang_prox = ninety - ang_prev;
+			} else if(ang_prox < ideal_angle){
+				ang_prev = ninety - ang_prox;
+			}
+		}		
+
+		dbg(i, ang_prev, ang_prox);
+		ld tan_prev, tan_prox;		
+		
+		if(pts[prev].y > pts[prox].y){			
+			tan_prox = tanl(angle(pts[prev] - pts[prox]) - ang_prox);
+			tan_prev = tanl(angle(pts[prox] - pts[prev]) + ang_prev);
+		} else{						
+			tan_prev = tanl(angle(pts[prox] - pts[prev]) - ang_prev);
+			tan_prox = tanl(angle(pts[prev] - pts[prox]) + ang_prox);
+		}
+
+		dbg(tan_prox, tan_prev);
+
+
+		line line_prev = line(get_pt(tan_prev, pts[prev]), pts[prev]);
+		line line_prox = line(get_pt(tan_prox, pts[prox]), pts[prox]);
+
+		pt p = inter(line_prev, line_prox);
+
+		ld d_prev = dist(pts[prev], pts[i]) + dist(pts[prox], pts[i]);
+		ld d_updated = dist(pts[prev], p) + dist(pts[prox], p);
+		dbg(i, d_prev, d_updated, p.x, p.y);
+
+		ld d = d_updated - d_prev;
+		ans = max(ans, d);
+	}
+
+	cout << fixed << setprecision(12) << ans << endl;
 }
