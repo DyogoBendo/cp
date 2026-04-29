@@ -27,7 +27,7 @@ void dbg_out(string s, H h, T... t){
 
 const ld DINF = 1e18;
 const ld pi = acos(-1.0);
-const ld eps = 1e-9;
+const ld eps = 1e-7;
 
 #define sq(x) ((x)*(x))
 
@@ -210,73 +210,80 @@ signed main(){
 
     for(int i = 0; i < n; i++) cin >> pts[i];
 
-    vector<ld> angles(n);
-
-    for(int i = 0; i < n; i++){
-        int prev = (i - 1+ n) % n;
-        int prox = (i + 1) % n;
-
-        ld ang_prev = angle(pts[prev] - pts[i]);
-        ld ang_prox = angle(pts[prox] - pts[i]);
-        
-        angles[i] = abs(ang_prev - ang_prox);
-        dbg(i, prev, prox, pts[i].x, pts[i].y, ang_prev, ang_prox, angles[i]);
-    }
-
-    for(int i = 0; i < n; i++) dbg(i, angles[i]);
-
-	ld ideal_angle = pi/4;
-	ld ninety = pi/2;
-
 	ld ans = 0;
-
-	dbg(tanl(ideal_angle));
 	for(int i = 0; i < n; i++){
-		int prev = (i - 1+ n) % n;
-        int prox = (i + 1) % n;
-		ld ang_prev = pi - angles[prev];
-        ld ang_prox = pi - angles[prox];
-		
-		if(ang_prev <= eps or ang_prox <= eps) continue;
-		
-		dbg(i, ang_prev, ang_prox);
-		if(ang_prev + ang_prox > ninety){
-			if(ang_prev >= ideal_angle and ang_prox >= ideal_angle){
-				ang_prev = ideal_angle;
-				ang_prox = ideal_angle;
-			} else if(ang_prev < ideal_angle){
-				ang_prox = ninety - ang_prev;
-			} else if(ang_prox < ideal_angle){
-				ang_prev = ninety - ang_prox;
-			}
-		}		
+		int prev = (i - 1 + n) % n;
+		int prev_prev = (i-2 + n) % n;
+		int prox = (i + 1) % n;
+		int prox_prox = (i + 2) % n;
 
-		dbg(i, ang_prev, ang_prox);
-		ld tan_prev, tan_prox;		
+		ld base_distance = dist(pts[prev], pts[i]) + dist(pts[prox], pts[i]);
+
+
+		line L1 = line(pts[prev_prev], pts[prev]);
+		line L2 = line(pts[prox_prox], pts[prox]);
 		
-		if(pts[prev].y > pts[prox].y){			
-			tan_prox = tanl(angle(pts[prev] - pts[prox]) - ang_prox);
-			tan_prev = tanl(angle(pts[prox] - pts[prev]) + ang_prev);
-		} else{						
-			tan_prev = tanl(angle(pts[prox] - pts[prev]) - ang_prev);
-			tan_prox = tanl(angle(pts[prev] - pts[prox]) + ang_prox);
+		pt dir_A = pts[prev] - pts[prev_prev];
+		line L3 = line(pts[prev], pts[prev] + rotate90(dir_A));
+		
+		pt dir_B = pts[prox_prox] - pts[prox];
+		line L4 = line(pts[prox], pts[prox] + rotate90(dir_B));
+
+		vector<pt> candidates;
+		
+		pt midpoint = (pts[prox] + pts[prev]) / 2.0;
+		pt apex = rotate90(pts[prev] - pts[prox]);
+		apex = (apex / 2.0) + midpoint;
+		candidates.push_back(apex);
+		
+		candidates.push_back(inter(L1, L2));
+		candidates.push_back(inter(L1, L4));
+		candidates.push_back(inter(L3, L2));
+		candidates.push_back(inter(L3, L4));
+		
+		candidates.push_back(proj(pts[prox], L1));
+		candidates.push_back(proj(pts[prox], L3));
+		candidates.push_back(proj(pts[prev], L2));
+		candidates.push_back(proj(pts[prev], L4));
+
+		auto check = [&](pt p) {			
+			if (abs(p.x) >= DINF / 2 || abs(p.y) >= DINF / 2) return false;
+			
+			pt v1 = pts[prev] - p;
+			pt v2 = pts[prox] - p;
+			if ((v1 * v2) > eps) return false;
+			
+			pt vA1 = pts[prev_prev] - pts[prev];
+			pt vA2 = p - pts[prev];
+			if ((vA1 * vA2) > eps) return false;
+			
+			pt vB1 = pts[prox_prox] - pts[prox];
+			pt vB2 = p - pts[prox];
+			if ((vB1 * vB2) > eps) return false;
+			
+			ld cross_prev = sarea(pts[prev_prev], pts[prev], p);
+			if (cross_prev < -eps) return false;
+			if (abs(cross_prev) <= eps) {
+				if (((p - pts[prev]) * dir_A) < -eps) return false;
+			}
+			
+			ld cross_prox = sarea(p, pts[prox], pts[prox_prox]);
+			if (cross_prox < -eps) return false;
+			if (abs(cross_prox) <= eps) {
+				if ((dir_B * (pts[prox] - p)) < -eps) return false;
+			}
+
+			return true;
+		};
+
+		for(auto c : candidates){
+			dbg(i, c.x, c.y);
+			if(check(c)){				
+				ans = max(ans, dist(c, pts[prev]) + dist(c, pts[prox]) - base_distance);
+			}
 		}
 
-		dbg(tan_prox, tan_prev);
-
-
-		line line_prev = line(get_pt(tan_prev, pts[prev]), pts[prev]);
-		line line_prox = line(get_pt(tan_prox, pts[prox]), pts[prox]);
-
-		pt p = inter(line_prev, line_prox);
-
-		ld d_prev = dist(pts[prev], pts[i]) + dist(pts[prox], pts[i]);
-		ld d_updated = dist(pts[prev], p) + dist(pts[prox], p);
-		dbg(i, d_prev, d_updated, p.x, p.y);
-
-		ld d = d_updated - d_prev;
-		ans = max(ans, d);
 	}
-
+    
 	cout << fixed << setprecision(12) << ans << endl;
 }
