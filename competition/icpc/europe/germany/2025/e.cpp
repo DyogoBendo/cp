@@ -251,25 +251,25 @@ signed main(){
 			
 			pt v1 = pts[prev] - p;
 			pt v2 = pts[prox] - p;
-			if ((v1 * v2) > eps) return false;
+			if ((v1 * v2) >= eps) return false;
 			
 			pt vA1 = pts[prev_prev] - pts[prev];
 			pt vA2 = p - pts[prev];
-			if ((vA1 * vA2) > eps) return false;
+			if ((vA1 * vA2) >= eps) return false;
 			
 			pt vB1 = pts[prox_prox] - pts[prox];
 			pt vB2 = p - pts[prox];
-			if ((vB1 * vB2) > eps) return false;
+			if ((vB1 * vB2) >= eps) return false;
 			
 			ld cross_prev = sarea(pts[prev_prev], pts[prev], p);
-			if (cross_prev < -eps) return false;
-			if (abs(cross_prev) <= eps) {
+			if (cross_prev <= -eps) return false;
+			if (abs(cross_prev) < eps) {
 				if (((p - pts[prev]) * dir_A) < -eps) return false;
 			}
 			
 			ld cross_prox = sarea(p, pts[prox], pts[prox_prox]);
-			if (cross_prox < -eps) return false;
-			if (abs(cross_prox) <= eps) {
+			if (cross_prox <= -eps) return false;
+			if (abs(cross_prox) < eps) {
 				if ((dir_B * (pts[prox] - p)) < -eps) return false;
 			}
 
