@@ -36,27 +36,25 @@ void solve(){
     vector<int> v(n);
     for(int i = 0; i < n; i++) cin >> v[i];
 
-    ord_set<pair<ll, ll>> s_even, s_odd, s;
-    s_odd.insert({0, 0});
-    s_even.insert({0, 0});
+    ord_set<pair<ll, ll>> s_even, s_odd, s;    
+    s_odd.insert({0, -1});    
 
 
-    ll psum = 0, psum_even = 0, psum_odd = 0;
+    ll psum_even = 0, psum_odd = 0;
     ll ans = 0;
-    for(int i = 0; i < n; i++){
-        psum = -psum;
-        psum += v[i];
+    for(int i = 0; i < n; i++){        
+        psum_even +=  (i&1)? -v[i] : v[i];
+        psum_odd += i&1? v[i] : -v[i];
+        
         int less;
-        if(i & 1){
-            psum_odd += v[i];
-            less = s_even.order_of_key({psum, -1});
-            s.insert({psum, i});
-        } else{
-            psum_even += v[i];
-            less =  s_odd.order_of_key({psum, -1});
-            s.insert({psum, i});
-        }
-        dbg(i, psum, less);
+        if(i & 1){            
+            less =  s_even.order_of_key({psum_odd, -2});
+            s_odd.insert({psum_even, i});
+        } else{            
+            less = s_odd.order_of_key({psum_even, -2});
+            s_even.insert({psum_odd, i});
+        }        
+        dbg(i, psum_even, psum_odd, less);
         ans += less;
     }
 
