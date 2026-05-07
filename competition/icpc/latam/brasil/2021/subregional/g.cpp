@@ -23,9 +23,22 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-int get_p2(ll x){
-    if(__builtin_popcountll(x) > 1) return -1;
-    return 64 - __builtin_clzll(x);
+vector<ll> fib;
+map<ll, int> mp;
+vector<int> curr;
+int check(ll x){
+    if(x == 1) return 1;
+    if(mp[x]) return mp[x];
+    dbg(x);
+    for(int i = sz(fib) -1; i >= 0; i--){
+        ll f = fib[i];
+        if(x % f == 0){
+            curr.push_back(i);
+            if(check(x / f) == 1) return mp[x] = 1;
+            curr.pop_back();
+        }
+    }
+    return mp[x] = -1;
 }
 
 signed main(){
@@ -35,7 +48,6 @@ signed main(){
 
     int cnta = 0;
 
-    vector<ll> fib;
     fib.push_back(2);
     fib.push_back(3);
 
@@ -44,12 +56,14 @@ signed main(){
         fib.push_back(fib[s - 1] + fib[s-2]);
     }    
 
-    vector<int> candidates;
-    for(auto x : fib){
-        if(n % x == 0) candidates.push_back(x);
+    if(check(n) == -1){
+        cout << "IMPOSSIBLE" << endl;
+    } else{
+        for(auto a : curr){
+            for(int i = 0; i <= a; i++) cout << "A";
+            cout << "B";
+        }
+        cout << endl;
     }
-
-    cout << sz(fib) << endl;
-
     return 0;
 }
