@@ -27,32 +27,31 @@ void dbg_out(string s, H h, T... t){
 
 void solve(){
     int n;
-    cin >> n;
+    cin >> n;    
     int ans = 0;
     int can_use_with_alone = 0;
-    int alone = 0;
-    int free = 0;
+    int alone = 0;    
+    int cnt = 0;
+    int tot = 0;
     for(int i = 0; i < n; i++){
         int x;
         cin >> x;
         if(x == 1) alone++;
         else{
-            ans+=2;
-            x -= 2;
-            can_use_with_alone += x/2;
-            free += x&1;
+            ans+=x;
+            can_use_with_alone += (x-2) / 2;            
+            cnt++;
         }
+        tot += x;
+    }    
+
+    if(tot < 3){
+        cout << 0 << endl;
+        return;
     }
 
-    dbg(ans, can_use_with_alone, alone, free);
-
-    ans += free;
-    int t = min(can_use_with_alone, alone);
-    ans += 3*t;
-    can_use_with_alone -= t;
-    alone -= t;
-    if(alone) ans ++;
-    ans += 2*can_use_with_alone;
+    if(cnt == 1) can_use_with_alone ++;
+    ans += min(can_use_with_alone, alone);
 
     cout << ans << endl;
 }

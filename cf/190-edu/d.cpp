@@ -24,7 +24,34 @@ void dbg_out(string s, H h, T... t){
 #endif
 
 void solve(){
+    int n;
+    cin >> n;
 
+    vector<int> a(n), b(n);
+    for(int i = 0; i < n; i++) cin >> a[i];
+    for(int i = 0; i < n; i++) cin >> b[i];
+    
+
+    auto calc = [](ll x){
+        return x*(x+1) / 2;
+    };
+
+    int curr = 0;
+    ll ans = 0, cnt = 0;
+    for(int i = 0; i < n; i++){
+        dbg(i, a[i], b[i], cnt);
+        if(a[i] != b[i] and (a[i] == curr or b[i] == curr)){
+            ans += calc(cnt);
+            cnt = 0;
+            curr= 1;
+        } else{
+            cnt++;
+            if(a[i] == b[i] and a[i] == curr) curr++;
+        } 
+    }
+    ans += calc(cnt);
+
+    cout << ans << endl;
 }
 
 
