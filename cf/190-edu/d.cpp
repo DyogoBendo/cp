@@ -29,27 +29,32 @@ void solve(){
 
     vector<int> a(n), b(n);
     for(int i = 0; i < n; i++) cin >> a[i];
+    for(int i = 0; i < n; i++) a[i]--;
     for(int i = 0; i < n; i++) cin >> b[i];
-    
+    for(int i = 0; i < n; i++) b[i]--;
 
-    auto calc = [](ll x){
-        return x*(x+1) / 2;
-    };
+    vector<int> pa(n+1, n), pb(n+1, n), dp(n+1, n);
 
-    int curr = 0;
-    ll ans = 0, cnt = 0;
-    for(int i = 0; i < n; i++){
-        dbg(i, a[i], b[i], cnt);
-        if(a[i] != b[i] and (a[i] == curr or b[i] == curr)){
-            ans += calc(cnt);
-            cnt = 0;
-            curr= 1;
+    ll ans = 0;
+    for(int i = n-1; i >= 0; i--){        
+        pa[a[i]] = i;
+        pb[b[i]] = i;
+
+        if(a[i] == b[i]){
+            int prox= a[i]+1;
+            if(pa[prox] == pb[prox]){
+                dp[i] = dp[pa[prox]];
+            } else{
+                dp[i] = min(pa[prox], pb[prox]);
+            }
+        }
+
+        if(pa[0] != pb[0]){
+            ans += min(pa[0], pb[0]) - i;
         } else{
-            cnt++;
-            if(a[i] == b[i] and a[i] == curr) curr++;
-        } 
+            ans += dp[pa[0]] - i;
+        }
     }
-    ans += calc(cnt);
 
     cout << ans << endl;
 }
