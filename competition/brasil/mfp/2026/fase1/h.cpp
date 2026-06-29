@@ -32,14 +32,14 @@ signed main(){
     cin >> n >> q;
 
     vector<vector<tuple<int, int, int>>> g(n);
-    vector<ll> weigths(n);
+    vector<ll> pesos(n);
     for(int i = 0; i < n-1; i++){
         int u, v, w;
         cin >> u >> v >> w;
         u--, v--;
         g[u].push_back({v, w, i});
         g[v].push_back({u, w, i});
-        weigths[i] = w;
+        pesos[i] = w;
     }
 
     vector<ll> cnt(n);
@@ -57,15 +57,15 @@ signed main(){
     dfs(0, 0);
 
     ll ans = 0;
-    for(int i = 0; i < n-1; i++) ans = (ans + (weigths[i] * cnt[i] % MOD)) % MOD;    
+    for(int i = 0; i < n-1; i++) ans = (ans + (pesos[i] * cnt[i] % MOD)) % MOD;    
 
     while(q--){
         int idx, w;
         cin >> idx >> w;
         idx--;            
-        ans = (ans - (weigths[idx] * cnt[idx])  % MOD + MOD) % MOD;        
-        weigths[idx] = w;
-        ans = (ans + (weigths[idx] * cnt[idx])  % MOD) % MOD;                
+        ans = (ans - (pesos[idx] * cnt[idx])  % MOD + MOD) % MOD;        
+        pesos[idx] = w;
+        ans = (ans + (pesos[idx] * cnt[idx])  % MOD) % MOD;                
         cout << ans << endl;
     }
 
