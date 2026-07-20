@@ -88,7 +88,6 @@ void solution(){
 
     vector<vector<int>> g(n+1);
 
-
     for(int i = 0; i < m; i++){
         int u, v;
         cin >> u >> v;
@@ -106,67 +105,17 @@ void solution(){
     int a1, a2, b1, b2;
     cin >> a1 >> a2 >> b1 >> b2;    
 
-    vector<int> visited(n+1), visited2(n+1);
-    function<void(int)> dfs = [&](int curr){
-        if(visited[curr]) return;
-        visited[curr] = 1;
-        for(auto e : g[curr]) dfs(e);
-    };    
-
-    function<void(int)> dfs2 = [&](int curr){
-        if(curr == a2) return;
-        if(visited2[curr]) return;
-        visited2[curr] = 1;
-        for(auto e : g[curr]) dfs2(e);
-    };    
-
-    dfs(a1);
-    dfs2(a1);
-
     d1.add(0, a1, INF);
-    d1.add(a2, n+1, INF);
+    d1.add(0, b1, INF);
+    d1.add(a2, n+1, INF); 
+    d1.add(b2, n+1, INF); 
 
-    d2.add(0, b1, INF);
-    d2.add(b2, n+1, INF);
+    d2.add(0, a1, INF);
+    d2.add(0, b2, INF);
+    d2.add(a2, n+1, INF); 
+    d2.add(b1, n+1, INF); 
 
-    auto d3 = d1;
-    d3.add(0, b1, INF);
-    d3.add(b2, n+1, INF);
-
-    if(visited[b2] and visited[a2] and visited[b1]){
-        assert(1);             
-        
-        if(!visited2[b1]){
-            cout << d1.max_flow(0, n+1) + d2.max_flow(0, n+1) << endl;            
-        } else{            
-            d1.add(b2, n+1, INF);
-            cout << d1.max_flow(0, n+1) << endl;
-        }
-        
-    } else if(visited[b2] and visited[a2] and !visited[b1]){
-        assert(1); 
-        cout << d1.max_flow(0, n+1) << endl;
-    } else if(visited[b2] and !visited[a2] and visited[b1]){
-        assert(1);
-        cout << d2.max_flow(0, n+1) << endl;
-    } else if(!visited[b2] and visited[a2] and !visited[b1]){
-        assert(1);
-        cout << d1.max_flow(0, n+1) + d2.max_flow(0, n+1) << endl;
-    } else if(visited[b2] and !visited[a2] and !visited[b1]){
-        assert(0); // c2
-        cout << 0 << endl;
-    } else if(!visited[b2] and visited[a2] and visited[b1]){
-        assert(0); // c3
-        cout << d1.max_flow(0, n+1) << endl;
-    } else if(!visited[b2] and !visited[a2] and visited[b1]){
-        assert(0); // c4
-        cout << 0 << endl;
-    } else if(!visited[b2] and !visited[a2] and !visited[b1]){
-        assert(0); // c5
-        cout << d2.max_flow(0, n+1) << endl;
-    } else{
-        assert(0);
-    }
+    cout << min(d2.max_flow(0, n+1), d1.max_flow(0, n+1)) << endl;
 }
 
 signed main(){
