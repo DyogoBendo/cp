@@ -60,8 +60,7 @@ void solution(){
     cin >> s;
 
     vector<string> digits_letters, zeros; 
-    int ap = 0, fp = 0; // parentes
-    int ex = 0; // exclamação
+    int ap = 0, fp = 0; // parentes    
     int mul = 0, sum = 0; // * e +
 
     for(int i = 0; i < n; i++){
@@ -71,116 +70,91 @@ void solution(){
         else if(s[i] >= 'a' and s[i] <= 'z') digits_letters.push_back(tmp);
         else if(s[i] == '0') zeros.push_back("0");
         else if(s[i] == '(') ap++;
-        else if(s[i] == ')') fp++;
-        else if(s[i] == '!') ex ++;
+        else if(s[i] == ')') fp++;        
         else if(s[i] == '*') mul++;
         else if(s[i] == '+') sum++;
     }
 
     int needed_var = mul + sum + 1;
+    dbg(ap, fp, mul, sum, needed_var);
     vector<string> var;
     check_var(digits_letters, zeros, needed_var, var);
     if(!can){
+        dbg(1);
         cout <<"impossible" << endl;
         return;
     }
-
+    
     if(ap != fp){
+        dbg(2);
         cout <<"impossible" << endl;
         return; 
     }
-
+    
     int num_par = ap;
-
+    
     if(num_par == 1){
         if(sum == 0 or mul == 0){
+            dbg(3);
             cout <<"impossible" << endl;
             return; 
         }
     } else if(num_par > 1){
-        if(sum < num_par or mul < num_par - 1){
+        dbg(sum, num_par, mul, num_par-1);
+        if(sum < num_par or 2*mul < num_par){
+            dbg(4);
             cout <<"impossible" << endl;
             return; 
         }
     }
 
-    // SOLUÇÃO PARA O !
-    if(ex > 2){
-        cout <<"impossible" << endl;
-        return; 
-    }
-
-    if(ex > 0 and num_par == 0){
-        cout << "impossible" << endl;
-        return;
-    }
-
-    if(ex == 2 and num_par == 1){
-        cout << "impossible" << endl;
-        return;
-    }
-
     cout << "possible" << endl;
-    
-    vector<string> comp;
-    for(int i = 0; i < num_par; i++){
-        string tmp = "(";
 
-        tmp += var.back();
-        var.pop_back();
-
-        tmp += "+";
+    // agora preciso distribuir as variáveis, () + *, para que use todos e não tenham nenhum operação redundante    
+    // ((a + b) * (a + c) + d) * e
+    while(num_par){
+        string a = var.back(); var.pop_back();
+        string b = var.back(); var.pop_back();
+        string c = "(" + a + "+"+ b + ")";        
         sum--;
-
-        tmp += var.back();
-        var.pop_back();
-
-        if(i == num_par - 1 and num_par > 1){
-            for(int j = 0; j < sum; j++){
-                tmp += "+";
-                tmp += var.back();
-                var.pop_back();
-            }
-    
-            while(sz(var)){
-                tmp += "*";
-                tmp += var.back();
-                var.pop_back();
-            }
-
-        }
-
-        tmp += ")";
-        comp.push_back(tmp);
-    }
-
-    if(num_par <= 1){
-        cout << var.back();
-        var.pop_back();
-
-        for(int j = 0; j < sum; j++){
-            cout <<  "+";
-            cout << var.back();
-            var.pop_back();
-        }
-
+        mul--;
+        string tmp = c + "*";
+        dbg(a, b, c);
         
-        for(int j = 0; j < mul; j++){
-            cout <<  "*";
-            if(sz(var)){
-                cout << var.back();
-                var.pop_back();
-            }
+        if(num_par == 1){        
+            dbg(var.back());
+            tmp += var.back();
+            var.pop_back();            
+        } else{
+            num_par--;
+            sum--;
+            string x = var.back(); var.pop_back();
+            dbg(x);
+            string y = var.back(); var.pop_back();
+            dbg(y);
+            string z = "(" + x + "+" + y + ")";
+            dbg(z);
+            
+            tmp += z;
         }
+        num_par--;
+        dbg(tmp);
+        var.push_back(tmp);            
     }
-    
-    if(ex >= 1) cout << "!";
-    for(int i = 0; i < sz(comp); i++){
-        cout << comp[i];
-        if(i < sz(comp) - 1) cout << "*";
-    } 
-    if(ex == 2) cout << "!";
 
+    cout << var.back(); var.pop_back();
+
+    while(mul){
+        cout << "*" << var.back();
+        mul--;        
+        var.pop_back();        
+    }
+
+    while(sum){
+        sum--;
+        cout << "+" << var.back();
+        var.pop_back();        
+    }
     cout << endl;
 }
 

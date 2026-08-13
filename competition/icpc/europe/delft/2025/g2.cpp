@@ -23,7 +23,6 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-
 const int MAX = 2e5;
 
 int n;
@@ -73,19 +72,48 @@ signed main(){
         if(!mp.count(s1)) mp[s1] = mp.size();
         if(!mp.count(s4)) mp[s4] = mp.size();
 
-        dbg(s1, mp[s1], s4, mp[s4]);
-
         gi[mp[s4]].push_back(mp[s1]);
         g[mp[s1]].push_back(mp[s4]);
     }
 
+    n = mp.size();
     kosaraju();
 
     set<int> s;
+
+    vector<set<int>> g2(mp.size()), gi2(mp.size());    
+
+    set<int> num_comp;
     for(int i = 0; i < mp.size(); i++){
-        dbg(i, comp[i]);
-        s.insert(comp[i]);
+        num_comp.insert(comp[i]);
+        for(int j : g[i]) if(comp[j] != comp[i]){
+            g2[comp[i]].insert(comp[j]);
+            gi2[comp[j]].insert(comp[i]);
+        }
     } 
 
-    cout << (s.size() > 1 ? "impossible" : "possible") << endl;
+    int cand = -1;
+    for(auto c : num_comp){
+        if(g2[c].size() == 0) cand = c;
+    }
+
+    if(cand == -1){
+        cout << "impossible" << endl;
+        return 0;
+    }
+
+    vector<int> vis2(mp.size());
+    int tot = 0;
+    function<void(int)> dfs = [&](int curr){
+        if(vis2[curr]) return;
+        vis2[curr] = 1;
+        tot++;
+        for(auto e : gi2[curr]){
+            dfs(e);
+        }
+    };
+
+    dfs(cand);
+
+    cout << (tot != num_comp.size() ? "impossible" : "possible") << endl;
 }
