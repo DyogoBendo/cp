@@ -25,180 +25,79 @@ void dbg_out(string s, H h, T... t){
 
 const int INF = 1e9;
 
-// MinCostMaxFlow
-//
-// min_cost_flow(s, t, f) computa o par (fluxo, custo)
-// com max(fluxo) <= f que tenha min(custo)
-// min_cost_flow(s, t) -> Fluxo maximo de custo minimo de s pra t
-// Se for um dag, da pra substituir o SPFA por uma DP pra nao
-// pagar O(nm) no comeco
-// Se nao tiver aresta com custo negativo, nao precisa do SPFA
-//
-// O(nm + f * m log n)
-
-template<typename T> struct mcmf {
+struct dinitz {
+	const bool scaling = false; // com scaling -> O(nm log(MAXCAP)),
+	int lim;                    // com constante alta
 	struct edge {
-		int to, rev, flow, cap; // para, id da reversa, fluxo, capacidade
-		bool res; // se eh reversa
-		T cost; // custo da unidade de fluxo
-		edge() : to(0), rev(0), flow(0), cap(0), cost(0), res(false) {}
-		edge(int to_, int rev_, int flow_, int cap_, T cost_, bool res_)
-			: to(to_), rev(rev_), flow(flow_), cap(cap_), res(res_), cost(cost_) {}
+		int to, cap, rev, flow;
+		bool res;
+		edge(int to_, int cap_, int rev_, bool res_)
+			: to(to_), cap(cap_), rev(rev_), flow(0), res(res_) {}
 	};
 
 	vector<vector<edge>> g;
-	vector<int> par_idx, par;
-	T inf;
-	vector<T> dist;
+	vector<int> lev, beg;
+	ll F;
+	dinitz(int n) : g(n), F(0) {}
 
-	mcmf(int n) : g(n), par_idx(n), par(n), inf(numeric_limits<T>::max()/3) {}
-
-	void add(int u, int v, int w, T cost) { // de u pra v com cap w e custo cost
-		edge a = edge(v, g[v].size(), 0, w, cost, false);
-		edge b = edge(u, g[u].size(), 0, 0, -cost, true);
-
-		g[u].push_back(a);
-		g[v].push_back(b);
+	void add(int a, int b, int c) {
+		g[a].emplace_back(b, c, g[b].size(), false);
+		g[b].emplace_back(a, 0, g[a].size()-1, true);
 	}
-
-	vector<T> spfa(int s) { // nao precisa se nao tiver custo negativo
-		deque<int> q;
-		vector<bool> is_inside(g.size(), 0);
-		dist = vector<T>(g.size(), inf);
-
-		dist[s] = 0;
-		q.push_back(s);
-		is_inside[s] = true;
-
-		while (!q.empty()) {
-			int v = q.front();
-			q.pop_front();
-			is_inside[v] = false;
-
-			for (int i = 0; i < g[v].size(); i++) {
-				auto [to, rev, flow, cap, res, cost] = g[v][i];
-				if (flow < cap and dist[v] + cost < dist[to]) {
-					dist[to] = dist[v] + cost;
-
-					if (is_inside[to]) continue;
-					if (!q.empty() and dist[to] > dist[q.front()]) q.push_back(to);
-					else q.push_front(to);
-					is_inside[to] = true;
-				}
-			}
-		}
-		return dist;
-	}
-	bool dijkstra(int s, int t, vector<T>& pot) {
-		priority_queue<pair<T, int>, vector<pair<T, int>>, greater<>> q;
-		dist = vector<T>(g.size(), inf);
-		dist[s] = 0;
-		q.emplace(0, s);
+	bool bfs(int s, int t) {
+		lev = vector<int>(g.size(), -1); lev[s] = 0;
+		beg = vector<int>(g.size(), 0);
+		queue<int> q; q.push(s);
 		while (q.size()) {
-			auto [d, v] = q.top();
-			q.pop();
-			if (dist[v] < d) continue;
-			for (int i = 0; i < g[v].size(); i++) {
-				auto [to, rev, flow, cap, res, cost] = g[v][i];
-				cost += pot[v] - pot[to];
-				if (flow < cap and dist[v] + cost < dist[to]) {
-					dist[to] = dist[v] + cost;
-					q.emplace(dist[to], to);
-					par_idx[to] = i, par[to] = v;
-				}
+			int u = q.front(); q.pop();
+			for (auto& i : g[u]) {
+				if (lev[i.to] != -1 or (i.flow == i.cap)) continue;
+				if (scaling and i.cap - i.flow < lim) continue;
+				lev[i.to] = lev[u] + 1;
+				q.push(i.to);
 			}
 		}
-		return dist[t] < inf;
+		return lev[t] != -1;
 	}
-
-	pair<int, T> min_cost_flow(int s, int t, int flow = INF) {
-		vector<T> pot(g.size(), 0);
-		pot = spfa(s); // mudar algoritmo de caminho minimo aqui
-
-		int f = 0;
-		T ret = 0;
-		while (f < flow and dijkstra(s, t, pot)) {
-			for (int i = 0; i < g.size(); i++)
-				if (dist[i] < inf) pot[i] += dist[i];
-
-			int mn_flow = flow - f, u = t;
-			while (u != s){
-				mn_flow = min(mn_flow,
-					g[par[u]][par_idx[u]].cap - g[par[u]][par_idx[u]].flow);
-				u = par[u];
-			}
-
-			ret += pot[t] * mn_flow;
-
-			u = t;
-			while (u != s) {
-				g[par[u]][par_idx[u]].flow += mn_flow;
-				g[u][g[par[u]][par_idx[u]].rev].flow -= mn_flow;
-				u = par[u];
-			}
-
-			f += mn_flow;
+	int dfs(int v, int t, int f = INF) {
+		if (!f or v == t) return f;
+		for (int& i = beg[v]; i < g[v].size(); i++) {
+			auto& e = g[v][i];
+			if (lev[e.to] != lev[v] + 1) continue;
+			int foi = dfs(e.to, t, min(f, e.cap - e.flow));
+			if (!foi) continue;
+			e.flow += foi, g[e.to][e.rev].flow -= foi;
+			return foi;
 		}
-
-		return make_pair(f, ret);
+		return 0;
 	}
-
-	// Opcional: retorna as arestas originais por onde passa flow = cap
-	vector<pair<int,int>> recover() {
-		vector<pair<int,int>> used;
-		for (int i = 0; i < g.size(); i++) for (edge e : g[i])
-			if(e.flow == e.cap && !e.res) used.push_back({i, e.to});
-		return used;
+	ll max_flow(int s, int t) {
+		for (lim = scaling ? (1<<30) : 1; lim; lim /= 2)
+			while (bfs(s, t)) while (int ff = dfs(s, t)) F += ff;
+		return F;
 	}
 };
-
-ll lcm(ll x, ll y){
-    ll g = gcd(x, y);
-
-    return x*y/g;
-}
 
 signed main(){
     darvem;
 
-    int n, m;
-    cin >> n >> m;
+	int n, m;
+	cin >> n >> m;
 
-    vector<vector<int>> colors(m);
-    vector<int> tam(n);
+	dinitz d(1 + n + m + 1);
 
-    ll l = 1;
-    for(int i = 0; i < n; i++){
-        int k;
-        cin >> k;
-        for(int j = 0; j < k; j++){
-            int c;
-            cin >> c;
-            c--;
-            colors[c].push_back(i);
-        }
+	for(int i = 0; i < n; i++){
+		d.add(0, i+1, 1);
+		int k;
+		cin >> k;
+		for(int j = 0; j < k; j++){
+			int c;
+			cin >> c;			
+			d.add(i+1, n+c, INF);			
+		}
+	}
 
-        tam[i] = k;
-        l = lcm(l, k);
-    }
+	for(int i = 1; i <= m; i++) d.add(n+i, n+m+1, 1);
 
-    dbg(l);
-
-    mcmf<int> mx_flow(1 + m + n + 1);
-
-    for(int i = 0; i < n; i++){
-        mx_flow.add(0, 1+m+i, l, 1);
-        mx_flow.add(1+m+i, 1+m+n, l, 0);
-    }
-    for(int i = 0; i < m; i++){
-        mx_flow.add(0, 1+i, INF, 1);
-        for(int j = 0; j < colors[i].size(); j++){
-            dbg(i, j, colors[i][j], tam[colors[i][j]]);
-            mx_flow.add(1+i, 1+m+colors[i][j], l/tam[colors[i][j]], 0);
-        }
-    }
-
-    auto ans = mx_flow.min_cost_flow(0, 1+m+n);
-    dbg(ans.first, ans.second);
-    cout << ans.second << endl;
+	cout << d.max_flow(0, n+m+1) << endl; 
 }
