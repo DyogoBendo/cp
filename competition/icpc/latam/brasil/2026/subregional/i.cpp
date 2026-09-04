@@ -51,8 +51,6 @@ signed main(){
     vector<int>  status(n+1), depends(n+1, -1), arrival(n+1), duration(n+1);
     vector<int> dependents(n+1);
 
-    vector<int> all_times;
-
     for(int i = 1; i <= n; i++){
         char T;
         cin >> T;
