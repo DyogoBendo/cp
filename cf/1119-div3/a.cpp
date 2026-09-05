@@ -36,7 +36,7 @@ void solve(){
             if(s[j+st] == '0') found= true;
         }
         ans += !found;
-    }
+    }   
     cout << ans << endl;
 }
 
