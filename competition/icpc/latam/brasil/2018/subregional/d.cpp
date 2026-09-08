@@ -23,15 +23,18 @@ void dbg_out(string s, H h, T... t){
 #define dbg(...) 42
 #endif
 
-void solve(){
-
-}
-
-
 signed main(){
     darvem;
-    int t = 1;
-    cin >> t;
 
-    while(t--) solve();
+    int n;
+    cin >> n;
+
+    int ans = 0;
+    for(int i = 0; i < n; i++){
+        int x;
+        cin >> x;
+        if(x != 1) ans++;
+    }
+
+    cout << ans << endl;
 }
