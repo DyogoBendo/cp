@@ -99,75 +99,17 @@ signed main(){
 
     int n = sz(s);
 
-    vector<vector<mint>> psum(10, vector<mint>(n+1)), ppsum(10, vector<mint>(n+1)), val(10, vector<mint>(n+1));
-    vector<vector<int>> prox(10, vector<int>(n+1, n));
-    vector<int> lst(10, -1);
-    vector<int> cnt(10, 0);
+    vector<mint> psum(10), c(10, 0);
 
     mint ans= 0;
     for(int i = 0; i < n; i++){
-        int d = s[i] - '0';
-        for(int j = d + 1; j <= 9; j++) psum[j][i+1] = psum[j][i];        
-        for(int j = 1; j < d; j++) psum[j][i+1] = 10*psum[j][i];                
+        int d = s[i] - '0';                        
+        for(int j = 1; j < d; j++) psum[j] *= 10;             				
+        psum[d] += c[d]*d + d;		
+        for(int j = 1; j <= 9; j++) ans += psum[j];                            		
 
-        int c = 0;
-        for(int j = d; j <= 9; j++) c += cnt[j];
-        
-        dbg(c);        
-        val[d][i] = 10;
-        val[d][i]^= (c-1);
-        val[d][i] *= d;
-        psum[d][i+1] = val[d][i] * 10 + psum[d][i];
-
-        cnt[d]++;
-        for(int j = 1; j<= 9; j++){
-            dbg(j, psum[j][i+1]);
-            ans += psum[j][i+1], ppsum[j][i+1] = ppsum[j][i] + psum[j][i+1];
-        } 
-        cout << "--------" << endl;
-
-        if(lst[d] != -1) prox[d][lst[d]] = i;
-        lst[d] = i;
-    }
-
-    vector<mint> dsum(10);
-    for(int i = 1; i <= 9; i++) for(int j = 1; j <= n; j++) dsum[i] += psum[i][j];
-
-    dbg(ans);
-
-    vector<int> cnt2(10, 0);
-    vector<mint> removed(10, 0);
-    for(int i = 0; i < n; i++){
-        // try to remove the digit i now
-        // so for every digit that is smaller then it, that appeared after 
-        int d = s[i] - '0';
-        int p = prox[d][i];    
-        
-        dbg(i, ans);
-
-        dbg(d, p, ppsum[d][p], ppsum[d][i]);
-        dbg(dsum[d]);
-        mint p10 = 10;
-        p10 ^= cnt2[d];
-        dbg(cnt2[d]);
-        
-        dbg(val[d][i], val[d][p]);
-        mint t = ppsum[d][p] - ppsum[d][i];
-        if(p != n) t += val[d][p];
-        dbg(t);
-        t -= removed[d];
-        dbg(t, removed[d]);
-        mint r = t / p10;       
-        dsum[d] -= r;
-        dbg(dsum[d], r);
-        removed[d] += t;
-        cnt2[d] = 0;
-        for(int j = 1; j <= d; j++) dsum[j] /= 10, cnt2[j]++;
-        for(int j = 1; j <= 9; j++){
-            dbg(j, dsum[j]);
-            ans += dsum[j];
-        } 
-    }
-
-    cout << ans << endl;
+        for(int j = 1; j <= 9; j++) c[j] += 1;        
+		for(int j = 1; j <= d; j++) c[j] *= 10;
+    }    
+    cout << ans << endl;    
 }
