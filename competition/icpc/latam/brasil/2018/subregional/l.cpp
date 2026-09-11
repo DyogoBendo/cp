@@ -78,35 +78,38 @@ signed main(){
     build(0);    
 
     while(q--){
-        int a, b, c, d1;
-        cin >> a >> b >> c >> d1;
-        a--, b--, c--, d1--;
-
-        int entered = 0;
+        int a, b, x, y;
+        cin >> a >> b >> x >> y;
+        a--, b--, x--, y--;
         
-        auto calc = [&](){
+        int lca_ab = lca(a, b);
+        int lca_xy = lca(x, y);
+        
+        int lca_ax = lca(a, x);
+        int lca_ay = lca(a, y);
+        
+        int lca_bx = lca(b, x);
+        int lca_by = lca(b, y);
 
-            int x = lca(a, b);
-            int y = lca(a, c);
-            int z = lca(a, d1);
-    
-            int mx = d[y] > d[z] ? y : z;
-            int mn = d[y] < d[z] ? y : z;        
-    
+        int lca_a = d[lca_ax] > d[lca_ay] ? lca_ax : lca_ay;
+        int lca_b = d[lca_bx] > d[lca_by] ? lca_bx : lca_by;
 
+        int lca_mn = d[lca_ab] > d[lca_xy] ? lca_ab : lca_xy;
+        int l = lca(lca_ab, lca_xy);
+        if(l != lca_ab and l != lca_xy){
+            cout << 0 << endl;
+            continue;
+        }
 
-            if(d[x] > d[mx]){
-                return 0;
-            } else{
-                mn = d[x] > d[mn] ? x : mn;
-                entered = mn != x;
-                return dist(mx, mn);
-            }
-        };
+        int ans = 0;
+        int cnt = 0;
+        dbg(lca_a+1, lca_b+1, lca_mn+1);
+        if(d[lca_mn] <= d[lca_a]) ans += dist(lca_a, lca_mn) + 1, cnt++;
+        if(d[lca_mn] <= d[lca_b]) ans += dist(lca_b, lca_mn) + 1, cnt++;
 
-        int ans = calc();
-        swap(a, b);
-        ans += calc();
-        cout << ans + entered << endl;
+        dbg(cnt, dist(lca_b, lca_mn));
+        if(cnt == 2) ans--;        
+
+        cout << ans  << endl;
     }
 }
