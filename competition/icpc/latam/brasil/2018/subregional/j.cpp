@@ -41,8 +41,10 @@ ld steiner(const vector<int> &S) {
 		for (int a = (mask - 1) & mask; a; a = (a - 1) & mask) {
 			int b = mask ^ a;
 			if (b > a) break;
-			for (int v = 0; v < n; v++)
+			for (int v = 0; v < n; v++){
+                if (v < k && a != (1 << v) && b != (1 << v)) continue;        
 				d[mask][v] = min(d[mask][v], d[a][v] + d[b][v]);
+            }
 		}
 		priority_queue<pair<ld, int>> pq;
 		for (int v = 0; v < n; v++) {   
